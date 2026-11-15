@@ -22,10 +22,24 @@ pub enum BackendError {
 /// Every method this backend answers, sorted. `getBackendInfo` reports it so
 /// Dart can check the contract at startup.
 pub const METHODS: &[&str] = &[
+    "annotateLyrics",
     "clearLogs",
+    "detectSections",
     "getBackendInfo",
     "getLogs",
     "initBackend",
+    "pairImportFiles",
+    "parseLyrics",
+    "playerLoad",
+    "playerPause",
+    "playerPlay",
+    "playerSeek",
+    "playerSetStemGains",
+    "playerSetVolume",
+    "playerState",
+    "playerStop",
+    "playerSwitchTrack",
+    "probeAudio",
     "setLoggingEnabled",
 ];
 
@@ -66,6 +80,12 @@ fn dispatch(method: &str, args: &Value) -> Result<Value, BackendError> {
             logging::global().set_enabled(bool_arg(method, args, "enabled")?);
             Ok(Value::Null)
         }
+        "annotateLyrics" => crate::lyrics::annotate(method, args),
+        "detectSections" => crate::lyrics::detect_sections(method, args),
+        "parseLyrics" => crate::lyrics::parse(method, args),
+        "pairImportFiles" => crate::media::pair(method, args),
+        "probeAudio" => crate::media::probe(method, args),
+        name if name.starts_with("player") => crate::player::dispatch(method, args),
         _ => Err(BackendError::UnknownMethod(method.to_owned())),
     }
 }
@@ -106,7 +126,11 @@ fn backend_info() -> Value {
     })
 }
 
-fn str_arg<'a>(method: &str, args: &'a Value, name: &str) -> Result<&'a str, BackendError> {
+pub(crate) fn str_arg<'a>(
+    method: &str,
+    args: &'a Value,
+    name: &str,
+) -> Result<&'a str, BackendError> {
     args[name]
         .as_str()
         .filter(|value| !value.is_empty())
@@ -114,6 +138,17 @@ fn str_arg<'a>(method: &str, args: &'a Value, name: &str) -> Result<&'a str, Bac
             method: method.into(),
             message: format!("missing string field {name}"),
         })
+}
+
+pub(crate) fn invalid(method: &str, message: impl Into<String>) -> BackendError {
+    BackendError::InvalidArguments {
+        method: method.into(),
+        message: message.into(),
+    }
+}
+
+pub(crate) fn operation(error: impl std::fmt::Display) -> BackendError {
+    BackendError::Operation(error.to_string())
 }
 
 fn bool_arg(method: &str, args: &Value, name: &str) -> Result<bool, BackendError> {

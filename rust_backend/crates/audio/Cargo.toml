@@ -1,0 +1,19 @@
+[package]
+name = "kalao-audio"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+symphonia.workspace = true
+cpal.workspace = true
+rubato.workspace = true
+ringbuf.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

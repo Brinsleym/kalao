@@ -40,6 +40,7 @@ fn check_lease(lease: Option<&RequestLease>) -> Result<(), String> {
 fn execute(request: &Value, check: &dyn Fn() -> Result<(), String>) -> Result<Value, String> {
     match string(request, "operation")? {
         "hash_file" => Ok(json!({"sha256": hash_file(string(request, "path")?, check)?})),
+        "rebuildSearchKeys" => rebuild_search_keys(request, check),
         other => Err(format!("Unknown native data job: {other}")),
     }
 }
@@ -77,6 +78,30 @@ pub(crate) fn hash_file(
     Ok(kalao_core::lower_hex(&hash.finalize()))
 }
 
+/// `{songs: [{id, title, artist}]}` → `{rows: [{songId, keyKind, key}]}` for
+/// the `song_search` table (DATA_MODEL.md §2).
+fn rebuild_search_keys(
+    request: &Value,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<Value, String> {
+    let songs = request
+        .get("songs")
+        .and_then(Value::as_array)
+        .ok_or("Missing native data field: songs")?;
+    let mut rows = Vec::new();
+    for (index, song) in songs.iter().enumerate() {
+        if index % 64 == 0 {
+            check()?;
+        }
+        let id = song.get("id").cloned().unwrap_or(Value::Null);
+        let text = |name| song.get(name).and_then(Value::as_str).unwrap_or_default();
+        for key in kalao_core::search_keys::keys(text("title"), text("artist")) {
+            rows.push(json!({"songId": id, "keyKind": key.key_kind, "key": key.key}));
+        }
+    }
+    Ok(json!({"rows": rows}))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -95,6 +120,20 @@ mod tests {
             serde_json::from_str::<Value>(&reply).unwrap()["sha256"],
             "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
         );
+    }
+
+    #[test]
+    fn rebuilds_search_keys() {
+        let reply = run_native_data_job(
+            json!({"operation": "rebuildSearchKeys", "songs": [{"id": 3, "title": "月亮", "artist": "A"}]})
+                .to_string(),
+            None,
+        )
+        .unwrap();
+        let rows: Value = serde_json::from_str(&reply).unwrap();
+        let rows = rows["rows"].as_array().unwrap();
+        assert!(rows.contains(&json!({"songId": 3, "keyKind": "pinyin", "key": "yueliang"})));
+        assert!(rows.contains(&json!({"songId": 3, "keyKind": "initials", "key": "yl"})));
     }
 
     #[test]
