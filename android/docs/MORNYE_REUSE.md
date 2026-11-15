@@ -25,6 +25,7 @@ Kalao is built on Mornye's code wherever Mornye already solves the problem. This
 | `.github/workflows/desktop.yml` | root | Later (desktop) |
 | `.github/ISSUE_TEMPLATE/*`, `PULL_REQUEST_TEMPLATE.md`, `actionlint.yaml` | root | Adapt (drop download-issue template; add lyrics/sync template) |
 | `.github/FUNDING.yml` | root | Adapt: `ko_fi: brinsley` |
+| `scripts/prepare_flutter_sdk.dart` and `patches/flutter/` (Mornye's Flutter framework patch) | — | Not used: Kalao builds with stock Flutter |
 | `scripts/build_rust_backend.sh`, `check_rust_backend.sh`, `build_android.sh`, `check_backend_apk.py`, `check_android_statx.sh`, `test_build_android.py`, `test_check_backend_apk.py`, `prepare_flutter_sdk.dart` | `scripts/` | Copy and rename; drop iOS/Discord/SMB/macOS/Windows scripts until desktop |
 | `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` | root | Adapt |
 

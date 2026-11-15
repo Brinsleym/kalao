@@ -1,0 +1,29 @@
+name: Lyrics, timing or annotation problem
+description: Wrong pinyin, furigana, romaji, Traditional/Simplified conversion, or lyric timing
+labels: ["lyrics"]
+body:
+  - type: textarea
+    id: line
+    attributes:
+      label: The lyric line
+      description: Paste the original line exactly as shown.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected reading or timing
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What Kalao shows
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Kalao version
+    validations:
+      required: true

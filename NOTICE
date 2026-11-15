@@ -1,0 +1,20 @@
+Kalao
+Copyright 2026 Brinsley Morrison
+
+SPDX-License-Identifier: GPL-3.0-only
+
+Kalao is licensed under the GNU General Public License, version 3 only.
+See LICENSE for the complete terms.
+
+Kalao is built on Mornye (https://github.com/mornyeapp/Mornye),
+Copyright 2026 zarzet, licensed under the GNU Lesser General Public License,
+version 3 only. Files derived from Mornye carry a header saying so and are
+modified for Kalao. The LGPL-3.0 permits this code to be used in a work
+licensed under the GPL-3.0.
+
+Third-party components retain their own copyrights and licenses:
+- Rust crates: see rust_backend/Cargo.lock; licences are listed by
+  `cargo about` / the in-app Licences page.
+- Flutter packages: listed on the in-app Licences page.
+- The launcher icon uses the microphone glyph from Material Icons
+  (Apache License 2.0, Google).

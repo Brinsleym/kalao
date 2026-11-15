@@ -5,11 +5,12 @@ Toolchain versions match Mornye (LIBRARIES.md §1).
 ## Current machine status (2026-11-15)
 | Tool | Status |
 | --- | --- |
-| Rust | ✅ cargo/rustc 1.99.1 (targets: wasm32, x86_64-pc-windows-msvc only) |
+| Rust | ✅ cargo/rustc 1.99.1; `scripts/build_rust_backend.sh host` works on this Windows host (Git Bash) |
+| Rust Android targets / cargo-ndk | ✅ aarch64, armv7, x86_64 targets; cargo-ndk 4.1.2; `scripts/build_rust_backend.sh android` works |
 | adb | ✅ |
-| Flutter 3.47.8 (FVM) | ❌ not installed |
-| JDK 25 | ❌ not installed |
-| Android SDK 37 / NDK 30.0.16248370 | ❌ not installed (`ANDROID_HOME` unset) |
+| Flutter 3.47.8 (FVM) | ✅ via Scoop `extras/fvm` (`FVM_CACHE_PATH` set). Without Developer Mode `fvm install` can't create its symlink: link it with a junction, `New-Item -ItemType Junction -Path .fvm\versions\3.47.8 -Target $env:FVM_CACHE_PATH\versions\3.47.8` |
+| JDK 25 | ✅ Temurin 25.0.5 via Scoop `java/temurin25-jdk` (`JAVA_HOME` set) |
+| Android SDK 37 / NDK 30.0.16248370 | ✅ via Scoop `main/android-clt` + `sdkmanager`: platform-tools, `platforms;android-37.0`, `build-tools;37.0.0`, NDK, `cmake;4.1.2`; licences accepted; `ANDROID_HOME`/`ANDROID_NDK_HOME` set |
 | Git | ✅ `karaoke/` is the `Brinsleym/kalao` repo; `poc-webapp/` is git-ignored. Private extensions live in a separate private repo |
 
 ## Install
@@ -37,6 +38,9 @@ gradle -p android/android :app:testDebugUnitTest   # Kotlin tests incl. MainActi
 docker compose -f stem-server/compose.yaml up  # stem gateway + GPU worker (needs NVIDIA container toolkit)
 cargo run -p kalao-ext -- validate path/to/ext # extension CLI (from M5)
 ```
+
+## Pushing workflow changes
+The GitHub CLI token needs the `workflow` scope to push files under `.github/workflows/`: run `gh auth refresh -h github.com -s workflow` once.
 
 ## Releases
 - Tag `vX.Y.Z` → `release.yml` builds per-ABI and universal APKs, signs them (V1–V4) with the release key from CI secrets, audits the Rust payloads, and publishes a GitHub Release with SHA-256 checksums and a `git-cliff` changelog. The update checker reads that release.
