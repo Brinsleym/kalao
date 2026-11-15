@@ -22,6 +22,7 @@ Toolchain versions match Mornye (LIBRARIES.md §1).
    rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
    cargo install cargo-ndk
    ```
+   On Linux hosts the host build of `kalao-audio` (cpal) needs ALSA headers: `sudo apt-get install libasound2-dev pkg-config`. On Windows, Gradle's `buildRustBackend` must find Git Bash before WSL's `bash.exe` with `~/.cargo/bin` on PATH; otherwise build the Rust library first with `bash scripts/build_rust_backend.sh android` and run Gradle with `-x buildRustBackend`.
 5. **Git Bash** for `scripts/*.sh` and **Python 3** for `scripts/check_backend_apk.py` (as in Mornye).
 6. **Docker Desktop** for the stem server (from M6).
 
