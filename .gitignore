@@ -1,0 +1,17 @@
+# Never published: old POC (contains leaked secrets and copyrighted audio)
+/poc-webapp/
+
+# Private extensions are never committed
+extensions/
+*.kalaoext
+
+# Secrets and signing
+.env*
+key.properties
+*.jks
+*.keystore
+
+# Build output
+target/
+build/
+.dart_tool/
