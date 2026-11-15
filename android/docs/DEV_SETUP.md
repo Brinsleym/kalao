@@ -1,43 +1,49 @@
 # Development Setup (Windows host)
 
+Toolchain versions match Mornye (LIBRARIES.md §1).
+
 ## Current machine status (2026-11-15)
 | Tool | Status |
 | --- | --- |
 | Rust | ✅ cargo/rustc 1.99.1 (targets: wasm32, x86_64-pc-windows-msvc only) |
 | adb | ✅ |
-| Flutter SDK | ❌ not installed |
-| JDK 17 | ❌ not installed |
-| Android SDK / NDK | ❌ not installed (`ANDROID_HOME` unset) |
-| Git | ⚠️ `karaoke/` is not a git repo. The public Kalao repo is `karaoke/` with `poc-webapp/` excluded (it contains leaked secrets and copyrighted audio). Keep the POC and the private extensions in separate private repos |
+| Flutter 3.47.8 (FVM) | ❌ not installed |
+| JDK 25 | ❌ not installed |
+| Android SDK 37 / NDK 30.0.16248370 | ❌ not installed (`ANDROID_HOME` unset) |
+| Git | ✅ `karaoke/` is the `Brinsleym/kalao` repo; `poc-webapp/` is git-ignored. Private extensions live in a separate private repo |
 
 ## Install
-1. Flutter SDK (stable) → add `flutter\bin` to PATH → `flutter doctor`.
-2. Android Studio (installs the SDK) → in SDK Manager also install the **NDK (side by side)**, CMake, and command-line tools; accept licences with `flutter doctor --android-licenses`.
-3. JDK 17 (Android Studio's bundled JBR is fine; set `JAVA_HOME`).
-4. Rust Android targets and tools:
+1. **FVM** (`dart pub global activate fvm` or the installer), then `fvm install` in `android/` (reads `.fvmrc`, Flutter 3.47.8). Use `fvm flutter …` for every command.
+2. **Android Studio** → SDK Manager: Android SDK Platform 37, Build-Tools, Command-line Tools, **NDK 30.0.16248370**, CMake. Set `ANDROID_HOME` and `ANDROID_NDK_HOME`. Accept licences: `fvm flutter doctor --android-licenses`.
+3. **JDK 25** (Kotlin `jvmTarget` 25, as Mornye); set `JAVA_HOME`.
+4. **Rust** Android targets and tools (the toolchain is pinned by `rust_backend/rust-toolchain.toml`):
    ```sh
    rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
    cargo install cargo-ndk
    ```
-   The toolchain version comes from `rust_backend/rust-toolchain.toml`.
-5. Git Bash (for the `scripts/*.sh` build scripts, as in Mornye).
-6. Stem server (from M6): Docker Desktop.
+5. **Git Bash** for `scripts/*.sh` and **Python 3** for `scripts/check_backend_apk.py` (as in Mornye).
+6. **Docker Desktop** for the stem server (from M6).
 
-## Everyday commands (once M0 lands; run from `karaoke/`)
+## Everyday commands (run from `karaoke/`)
 ```sh
-bash scripts/build_rust_backend.sh host       # host library + Kotlin bindings (kalao-bindgen)
-bash scripts/build_rust_backend.sh android    # host step, then libkalao_mobile.so per ABI
-bash scripts/check_rust_backend.sh            # cargo fmt --check, clippy -D warnings, cargo test (all --locked)
-cd android && flutter run                     # Gradle runs the android build step before preBuild
-cd android && flutter test && flutter test integration_test
-docker compose -f stem-server/compose.yaml up # stem gateway + GPU worker (needs NVIDIA container toolkit)
-cargo run -p kalao-ext -- validate path/to/ext   # extension CLI (from M5)
+bash scripts/build_rust_backend.sh host        # host library + Kotlin bindings (kalao-bindgen)
+bash scripts/build_rust_backend.sh android     # then libkalao_mobile.so per ABI (KALAO_RUST_ANDROID_ABIS selects ABIs)
+bash scripts/check_rust_backend.sh             # cargo fmt --check, clippy -D warnings, cargo test (all --locked)
+cd android && fvm flutter run                  # Gradle's buildRustBackend runs the android build before preBuild
+cd android && fvm dart run build_runner build  # json_serializable models
+cd android && fvm flutter analyze && fvm flutter test
+cd android && fvm flutter test integration_test
+gradle -p android/android :app:testDebugUnitTest   # Kotlin tests incl. MainActivityRoutingTest
+docker compose -f stem-server/compose.yaml up  # stem gateway + GPU worker (needs NVIDIA container toolkit)
+cargo run -p kalao-ext -- validate path/to/ext # extension CLI (from M5)
 ```
 
 ## Releases
-- Tag `vX.Y.Z` → CI builds and signs the APKs with the release key (a CI secret, never in the repo), and creates a GitHub Release with per-ABI and universal APKs, SHA-256 checksums and the changelog.
+- Tag `vX.Y.Z` → `release.yml` builds per-ABI and universal APKs, signs them (V1–V4) with the release key from CI secrets, audits the Rust payloads, and publishes a GitHub Release with SHA-256 checksums and a `git-cliff` changelog. The update checker reads that release.
 
 ## Conventions
-- Rust: `cargo fmt`, `clippy -D warnings`, `thiserror` for library errors; no `unwrap` outside tests; `unsafe` only in `kalao-desktop/src/ffi.rs`; every cargo call in scripts and CI passes `--locked`.
-- Dart: `flutter analyze` clean, `very_good_analysis` lints; no business logic in widgets or providers.
-- Commits are small and CI must pass; each milestone gets a tag.
+- Rust: `cargo fmt`, `clippy -D warnings`, `thiserror` errors, no `unwrap` outside tests, `unsafe` only in `kalao-desktop/src/ffi.rs` and audited exceptions; `--locked` everywhere.
+- Dart: `dart format`, `flutter analyze` clean with Mornye's `analysis_options.yaml` and `riverpod_lint`; no business logic in widgets or providers; backend calls only through `PlatformBridge`.
+- Kotlin: a new native method is added to `nativeBackendMethods` and the `when` in the same change (the routing test enforces it).
+- Copied Mornye files keep the attribution header (MORNYE_REUSE.md §1).
+- Small commits; CI must pass; each milestone gets a tag.

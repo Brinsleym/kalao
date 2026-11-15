@@ -11,14 +11,14 @@
 | --- | --- | --- |
 | Device and user data | A malicious or buggy extension | QuickJS sandbox, no FS/process access, host allowlist checked after every redirect, memory/time/response caps, per-extension storage, secrets redacted from logs, an install prompt showing hosts and permissions, signed repositories with pinned keys (EXTENSIONS.md §5, §7) |
 | Extension supply chain | A tampered package or repo | SHA-256 + ed25519 signature per package; trust-on-first-add of the repo key; a key change requires re-trust; no remote code loading at runtime |
-| User-entered keys (Azure, stem, extension secrets) | Extraction from the device or a backup | Keystore-backed secure storage; never logged; never written to backups; `allowBackup="false"` |
+| User-entered secrets (stem key, extension secrets, MyMemory email) | Extraction from the device or a backup | Keystore-backed secure storage; never logged; never written to backups; `allowBackup="false"` |
 | Backup files | Tampering, or a malicious file opened by the user | Zip limits as for extensions (entry count, size, no `..`/absolute paths/symlinks); per-entry SHA-256 checked before applying; SQLite opened read-only and validated (`PRAGMA integrity_check`, schema version) before merge; restore in one transaction after a safety copy |
 | Backup privacy | A backup shared by mistake | Contains no credentials; the export screen says backups are unencrypted |
 | Stem API keys | Sharing / leaking | argon2-hashed at rest; bound to 1 device hash; per-key rate and size limits; revocation and device reset via the admin CLI |
 | Uploaded audio (remote stems) | Retention / leak | TLS; deleted after download or after 24 h at most; no audio in logs; worker containers with no outbound network access |
 | Stem server | Injection, abuse | `sqlx` typed queries, validation at the boundary, Redis rate limits, body and upload size limits; `/metrics` behind an admin token |
-| Party (LAN) | A rogue joiner | Join code + host approval; per-room token in the QR; guests can only queue, never control playback settings |
-| Releases | A tampered APK | Signed with one release key kept outside the repo (CI secret); SHA-256 checksums published with every GitHub Release; the update check only links to the release page |
+| Party (LAN) | A rogue joiner or a relaying attacker | Mornye Link's design: self-signed TLS with the certificate fingerprint in the QR, 6-digit PIN proved with HMAC over the fingerprint (5 bad proofs close the window), host approval, guests can only queue their own entries; the TV view is read-only behind a random room token |
+| Releases | A tampered APK | Signed with one release key kept outside the repo (CI secret); SHA-256 checksums published with every GitHub Release; in-app updates download only on user request, verify the SHA-256 before handing the APK to the system installer, and Android verifies the signature matches the installed app |
 | Lyrics from extensions | Markup injection | Normalised to plain text in `kalao-core::text`; never rendered as HTML |
 
 ## Android specifics

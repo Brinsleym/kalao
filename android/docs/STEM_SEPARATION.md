@@ -15,8 +15,8 @@ Splits a song into **vocals** and **instrumental**. OG Karaoke mode uses the ins
   3. Run inference per chunk.
   4. Overlap-add.
   5. Instrumental = mix − vocals (the residual), or the model's own output.
-  6. Encode the stems to Opus 160 kbps in the cache.
-- **Job handling:** runs in an Android foreground service with a progress notification and a cancel action. A checkpoint after every chunk means the job resumes after process death or a reboot. Only one job runs at a time; the others are queued. It pauses on low battery or thermal throttling (both user-overridable).
+  6. Write the stems as FLAC (44.1 kHz stereo, `flacenc`) to `stems/<sha256>/`. FLAC is lossless and decodes with Symphonia, so no extra codec library is needed; a 4-minute song uses about 25–30 MB per stem.
+- **Job handling:** runs in Mornye's `BackgroundWorkService` (kind `stems`), an Android foreground service with a progress notification and a cancel action. A checkpoint after every chunk means the job resumes after process death or a reboot. Only one job runs at a time; the others are queued. It pauses on low battery or thermal throttling (both user-overridable).
 - **Cache:** stems are keyed by the audio file's SHA-256, so the same song is never separated twice. They are pinned with downloads and LRU-evicted otherwise.
 
 ## 2. Remote processing (optional)

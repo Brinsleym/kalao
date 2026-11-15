@@ -34,7 +34,7 @@ Each feature lists its milestone (see ROADMAP.md). **Source:** P = in the POC, R
 | 2.9 | Tap-to-time sync editor (tap at each line or word while playing) | N | M2 |
 | 2.10 | Language detection of lyrics | P | M5 |
 | 2.11 | Auto lyric fetch through **lyrics extensions** (the private Musixmatch, Genius, Lyrics.ovh, ChartLyrics, utaten, uta-net extensions are made by the owner); ranked to prefer synced lyrics; user-set provider priority and fallback | P+R | M5 |
-| 2.12 | Line-by-line translation, called directly from the device: **Azure AI Translator** when the user enters their own key (F0 tier, 2M chars/month free), otherwise **MyMemory**; MyMemory is also the fallback when Azure fails or the monthly budget is used. Cached per line × language on the device. See Q12 | R | M6 |
+| 2.12 | Line-by-line translation with **MyMemory**, called directly from the device (no key; an optional contact email raises the free daily limit). Each distinct line is sent once; results are cached per line × language on the device | R | M6 |
 | 2.13 | Karaoke word-highlight sweep driven by word timing | N | M2 |
 
 ## 3. Modes
@@ -64,7 +64,7 @@ Each feature lists its milestone (see ROADMAP.md). **Source:** P = in the POC, R
 | 5.2 | Install from a file (`.kalaoext`) or from an **extension repository URL** (signed index); update checks | N | M5 |
 | 5.3 | Extension settings UI generated from the manifest (text, secret, toggle, select, button actions) | N | M5 |
 | 5.4 | Per-extension network allowlist, third-party login callback support (for sites an extension talks to), health checks, enable/disable, priority ordering | N | M5 |
-| 5.5 | Public extension authoring docs ([EXTENSIONS.md](EXTENSIONS.md)) and a public sample extension (local LRC folder provider) | N | M5 |
+| 5.5 | Public extension authoring docs ([EXTENSIONS.md](EXTENSIONS.md)) and a public sample extension (LRCLIB, an open lyrics API) | N | M5 |
 
 ## 6. Library and discovery
 
@@ -85,8 +85,8 @@ Each feature lists its milestone (see ROADMAP.md). **Source:** P = in the POC, R
 | 7.1 | **Export** the library to one `.kalaobackup` file in a user-chosen location (SAF): songs, lyrics and timing edits, annotations, favorites, plays and scores, queue, settings, extension list and repositories | N | M4 |
 | 7.2 | Optional **media in the backup**: imported audio and stems (large; off by default) | N | M4 |
 | 7.3 | **Restore** from a backup: merge into the current library or replace it; a preview of what will change before applying; schema-versioned so newer apps read older backups | N | M4 |
-| 7.4 | Optional **scheduled backup** to a chosen folder (daily or weekly, keep the last N), so users can sync that folder with their own tools | N | M4 |
-| 7.5 | Secrets (translation key, stem key, extension secrets) are **never** written to a backup; restored extensions ask for them again | N | M4 |
+| 7.4 | Optional **scheduled backup** to a chosen folder (daily or weekly, keep the last N), so users can sync that folder with their own tools. A due backup runs when the app is next opened | N | M4 |
+| 7.5 | Secrets (stem key, extension secrets, the MyMemory contact email) are **never** written to a backup; restored extensions ask for them again | N | M4 |
 | 7.6 | Import from the POC: songs and lyrics from a POC database export, as a one-off converter | N | M4 |
 
 ## 8. Parties (LAN only)
@@ -107,10 +107,10 @@ Each feature lists its milestone (see ROADMAP.md). **Source:** P = in the POC, R
 | 9.2 | Themes: dark, light, system, Material You; lyric text sizes S–XXL | P+ | M1 |
 | 9.3 | Hardware keyboard and gamepad shortcuts as in the POC (Space, ←/→ 5s, ↑/↓ line, S, L, ?) plus a help sheet | P | M3 |
 | 9.4 | Accessibility: TalkBack, dynamic type, contrast, reduced motion | N | M1+ |
-| 9.5 | Diagnostics: a local debug log the user can export and attach to a GitHub issue. No analytics, telemetry or crash reporting | P (replaced) | M4 |
+| 9.5 | Diagnostics: a local debug log the user can export, and a local crash report shown on the next start with a link to open a GitHub issue. Nothing is sent automatically; no analytics or telemetry | P (replaced) | M4 |
 | 9.6 | Privacy statement and open-source licences screens | P+ | M4 |
 | 9.7 | **Support Kalao**: one row in Settings → About that opens `https://ko-fi.com/brinsley` in the browser. No popups, banners, reminders or in-app payments | N | M4 |
-| 9.8 | Update check against GitHub Releases (on by default, can be turned off): shows a notice with the changelog and opens the release page; never downloads or installs by itself | N | M4 |
+| 9.8 | Update check against GitHub Releases (on by default, can be turned off): shows the changelog; only when the user taps Update, downloads the APK for the device's ABI, verifies its SHA-256 and opens the system installer. "Open release page" is always offered | N | M4 |
 
 ## Dropped or replaced POC items
 

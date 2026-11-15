@@ -2,7 +2,7 @@
 
 > This document is public. Kalao ships no content scrapers. Every lyrics, metadata or audio source is an extension the user installs. Extensions made by the Kalao maintainer are distributed privately and are not part of this repository.
 
-The design follows Mornye's extension system: a zip package with a root `manifest.json` and `index.js`, run inside an embedded QuickJS sandbox, with network access granted per extension.
+The framework is Mornye's extension system (its `extensions` crate, adapted): a zip package with a root `manifest.json` and `index.js`, run inside an embedded QuickJS sandbox, with network access granted per extension.
 
 ## 1. What an extension can do
 
@@ -148,7 +148,7 @@ There is **no** filesystem access, child process, `eval` of fetched code, or acc
 
 ## 8. Developing an extension
 
-1. Copy the public sample `examples/extensions/local-lrc/`.
+1. Copy the public sample `examples/extensions/lrclib/` (an LRCLIB lyrics provider).
 2. Enable **Settings → Extensions → Developer mode**, which allows unsigned installs, `localhost` HTTP and a live reload from a folder on the device.
 3. Run `kalao-ext` (a CLI crate in the top-level `rust_backend/`, built at M5) to `validate` the manifest, `test` against recorded fixtures, `pack` the package and `sign` with your ed25519 key.
 4. Respect the terms of the sites you access. Extensions are the author's responsibility.
