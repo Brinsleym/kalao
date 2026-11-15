@@ -35,10 +35,7 @@ class SettingsTab extends ConsumerWidget {
         children: [
           SettingsGroup(
             title: l10n.settingsAppearance,
-            children: [
-              const ThemeModeTile(),
-              const LanguageTile(),
-            ],
+            children: [const ThemeModeTile(), const LanguageTile()],
           ),
           SettingsGroup(
             title: l10n.settingsDiagnostics,

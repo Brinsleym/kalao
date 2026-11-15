@@ -60,10 +60,6 @@ class AppSettings {
       other.verboseLogging == verboseLogging;
 
   @override
-  int get hashCode => Object.hash(
-    setupCompleted,
-    themeMode,
-    localeTag,
-    verboseLogging,
-  );
+  int get hashCode =>
+      Object.hash(setupCompleted, themeMode, localeTag, verboseLogging);
 }
