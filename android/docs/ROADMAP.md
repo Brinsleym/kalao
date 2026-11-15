@@ -2,38 +2,42 @@
 
 Milestones are ordered by dependency; each ends with a tested build on `main` and a tag. Feature numbers refer to FEATURES.md; "Mornye" names the source to copy or adapt (MORNYE_REUSE.md); design details are in IMPLEMENTATION.md (§ numbers below). Every feature in FEATURES.md appears in exactly one milestone; the coverage table at the end checks that.
 
-## M0 Foundations
+## M0 Foundations — implemented (2026-11-15)
 
-| # | Task | Mornye source |
-| --- | --- | --- |
-| M0.1 | Root tooling: `.editorconfig`, `.gitattributes`, `cliff.toml`, `renovate.json`, `NOTICE` (Kalao + Mornye attribution), `CONTRIBUTING.md`, issue/PR templates, `FUNDING.yml` (`ko_fi: brinsley`) | root files |
-| M0.2 | `rust_backend/` workspace: `Cargo.toml` (members `core`, `network`, `providers`, `mobile`, `bindgen`), `rust-toolchain.toml`, workspace lints, `vendor/rustix-1.1.6` patch, `NOTICE`, `README.md` crate map; licence `GPL-3.0-only` | `rust_backend/*` |
-| M0.3 | `crates/network` and `crates/bindgen` copied and renamed | `crates/network`, `crates/bindgen` |
-| M0.4 | `crates/core`: JSON helpers, `filename`, `tags`, `cover`, `progress`, `lyrics/{lrc,matching,file,errors,config,payloads/ttml}`; drop Go-compat code; tests pass | `crates/core` |
-| M0.5 | `crates/mobile`: UniFFI scaffolding, `invoke_application` dispatch, `cancellation`, `logging` (`LogBuffer`), `progress`, `data_jobs`; `uniffi.toml` (`com.brinsley.kalao.backend`, `kalao_mobile`); `initBackend`, `getBackendInfo`, `getLogs` | `crates/mobile` |
-| M0.6 | `scripts/build_rust_backend.sh` (host + android), `check_rust_backend.sh`, `build_android.sh`, `check_backend_apk.py` (+ their tests) | `scripts/` |
-| M0.7 | Flutter project `android/` (`com.brinsley.kalao`, Flutter 3.47.8 via `.fvmrc`), `pubspec.yaml` with the M0 subset of LIBRARIES.md, `analysis_options.yaml`, `l10n.yaml`; folder skeleton per ARCHITECTURE §3 | `pubspec.yaml`, `lib/` layout |
-| M0.8 | Kotlin host: `KalaoApplication`, `MainActivity` routing (`nativeBackendMethods`), `SelectedCoreBackend.kt`, `RustCoreBackendApplication.kt`, `NativeDataJobs.kt`, `__json_file` spill + cache sweep, `MainActivityProgressStreams.kt`, `BackgroundWorkService`, `ForegroundServiceStartPolicy`, `MainActivityRoutingTest`; Gradle `buildRustBackend` before `preBuild`, JNA, ProGuard rules, ABI splits, 16 KB alignment, signing from env | `android/app/*` |
-| M0.9 | Dart backend layer: `services/backend/*`, `platform_bridge.dart` (+ parts), isolate JSON decode, spill handling | `lib/services/backend`, `platform_bridge.dart` |
-| M0.10 | App shell: `main.dart`, `app.dart` router (`/setup` → `/tutorial` → `/whats-new` → `/`), `main_shell.dart` (Home, Library, Queue, Extensions, Settings tabs as placeholders), `setup_screen` (permissions, language) | `app.dart`, `screens/main_shell.dart`, `setup_*` |
-| M0.11 | Theme layer (Material style only) and design-system widgets; Kalao tokens, icon and launcher icons | `lib/theme`, `widgets/app_*`, `expressive_*` |
-| M0.12 | l10n scaffold: `app_en.arb` + `zh_Hans`, `zh_Hant`, `ja`; `supported_locales.dart` | `lib/l10n` |
-| M0.13 | Settings infrastructure: `models/settings.dart`, `settings_provider`, `settings_tab`, `app_settings_page`, `appearance_settings_page`, `settings_search_catalog`, `secure_storage_options`, `preference_blob_store` | settings files |
-| M0.14 | Logging and crash capture: `AppLogger`, `native_log_source`, `log_screen`, `app_crash_service`, `AppCrashReporter.kt`, `NativeCrashTrace.kt` | logging files |
-| M0.15 | CI `ci.yml`: Dart format + analyze + test; `check_rust_backend.sh`; Android `assembleDebug` + `testDebugUnitTest` + APK payload audit; gitleaks; fail if `*.kalaoext` or `extensions/**` is tracked | `.github/workflows/ci.yml` |
-| M0.16 | `release.yml`: tag → per-ABI + universal APKs, V1–V4 signing and verification, payload audit, debug-symbol artifact, GitHub Release with SHA-256 checksums and `git-cliff` changelog (dry-run only until M3) | `.github/workflows/release.yml` |
+Status: ✅ built and tested locally (Rust: fmt, clippy, 60 tests; script tests); ⏳ Flutter analyze/test and the Android build run in CI on the first push (this machine has no Flutter or Android SDK).
 
-**Exit:** `getBackendInfo` round-trips Dart → Kotlin → Rust on an emulator and a device; logs from Rust appear in the log screen; CI is green; `release.yml` dry run produces signed APKs.
+| # | Task | Status | Mornye source |
+| --- | --- | --- | --- |
+| M0.1 | Root tooling: `.editorconfig`, `.gitattributes`, `cliff.toml`, `renovate.json` (automerge off), `NOTICE` (Kalao + Mornye attribution), `CONTRIBUTING.md`, issue templates (bug, lyrics, feature), PR template, `FUNDING.yml` (`ko_fi: brinsley`) | ✅ | root files |
+| M0.2 | `rust_backend/` workspace: `Cargo.toml` (members `core`, `network`, `mobile`, `bindgen`), `rust-toolchain.toml`, workspace lints, `README.md` crate map, `Cargo.lock` seeded from Mornye's; licence `GPL-3.0-only` | ✅ (`providers` moves to M6.7; the `rustix` patch is added with the first crate that uses `rustix`, M1.5) | `rust_backend/*` |
+| M0.3 | `crates/network` and `crates/bindgen` copied and renamed | ✅ | `crates/network`, `crates/bindgen` |
+| M0.4 | `crates/core`: JSON helpers, text, XML depth check, matching, cancellation (domains `DataJob`, `ExtensionRequest`), lyrics (`lrc`, `matching`, `errors`, `json`, `payloads` incl. TTML) with Mornye's tests and fixture; built-in provider config, LRCLIB, provider schemas and Paxsenix credits removed | ✅ (`filename`, `tags`, `cover` move to M1.5; `progress` to M6.1) | `crates/core` |
+| M0.5 | `crates/mobile`: UniFFI scaffolding; `invoke_application(method, args_json)` with a sorted method table (`initBackend`, `getBackendInfo`, `getLogs`, `clearLogs`, `setLoggingEnabled`); `run_native_data_job` (`hash_file`); cancellation registry; process-wide log buffer; `uniffi.toml` (`com.brinsley.kalao.backend`, `kalao_mobile`) | ✅ | `crates/mobile` |
+| M0.6 | `scripts/build_rust_backend.sh` (host + android; arm64, armv7, x86_64; Linux, macOS and Windows hosts), `check_rust_backend.sh`, `build_android.sh`, `check_backend_apk.py` (ELF, ABI set, 16 KB `PT_LOAD` alignment) + `test_check_backend_apk.py` | ✅ | `scripts/` |
+| M0.7 | Flutter project `android/` (`com.brinsley.kalao`, Flutter 3.47.8 via `.fvmrc`), `pubspec.yaml` (M0 subset), Mornye's `analysis_options.yaml` and `l10n.yaml` | ✅ | `pubspec.yaml`, `lib/` layout |
+| M0.8 | Kotlin host: `KalaoApplication`, `MainActivity` routing (`nativeBackendMethods` + `MainActivityRoutingTest`), `MainActivityCalls.kt` (screen awake, background work, crash report), `SelectedCoreBackend.kt` (CoreBackend over UniFFI/JNA, JSON argument conversion), `NativeDataJobs.kt`, `__json_file` spill + stale-file sweep, `BackgroundWorkService` + `ForegroundWorkLock` + `CoalescingWorkRefresh` + `ForegroundServiceStartPolicy`, `AppCrashReporter`; Gradle `buildRustBackend` before `preBuild`, JNA, ProGuard rules, ABI splits, signing from `key.properties`; adaptive launcher icon; HTTPS-only network config; Android backup disabled | ✅ (progress `EventChannel`s arrive with the first stream, M1.1; audio_service's cached engine with M1.4; `NativeCrashTrace` with M1.1) | `android/app/*` |
+| M0.9 | Dart backend layer: `services/backend/{backend_channel,method_channel_backend}.dart`, `platform_bridge.dart` (typed calls, isolate JSON decode, `__json_file` spill) | ✅ (`RustFfiBackend` with `desktop/`) | `lib/services/backend`, `platform_bridge.dart` |
+| M0.10 | App shell: `main.dart` (error handlers, settings, engine check), `app.dart` (go_router, `initialLocationForAppState`), `main_shell.dart` (Home, Library, Queue, Extensions placeholders + Settings), `setup_screen.dart` (language, theme) | ✅ (tutorial and What's New in M3.8; permission steps with the features that need them) | `app.dart`, `screens/main_shell.dart`, `setup_*` |
+| M0.11 | Theme layer: `app_tokens.dart`, `app_theme.dart` (Material 3, Kalao coral seed), Material You via `dynamic_color`; widgets `settings_group`, `empty_state`, `app_crash_banner` | ✅ (further Mornye design-system widgets are copied when a screen needs them) | `lib/theme`, `widgets/` |
+| M0.12 | l10n: `app_en.arb`, `app_zh.arb` (Simplified), `app_zh_Hant.arb`, `app_ja.arb`; `supported_locales.dart`; language picker | ✅ | `lib/l10n` |
+| M0.13 | Settings: `models/settings.dart` (hand-written JSON, tolerant of unknown keys), `settings_provider` (shared_preferences), `settings_tab` (appearance, diagnostics, about with engine info and licences) | ✅ (`json_serializable` is introduced when models need code generation; `settings_search_catalog`, `secure_storage_options` and `preference_blob_store` with their first users in M4–M6) | settings files |
+| M0.14 | Logging and crash capture: `AppLogger` + `LogBuffer` with Mornye's redaction rules (plus MyMemory's `de=`), Rust log buffer merged in `log_screen` (copy, clear), `app_crash_service` + `AppCrashReporter.kt` (Dart errors saved as context only; banner after a real crash) | ✅ (log export/share and the GitHub issue link in M4.8) | logging files |
+| M0.15 | CI `ci.yml`: gitleaks; fail if `*.kalaoext`, `android/extensions/` or `poc-webapp/` is tracked; Dart format + analyze + test; `check_rust_backend.sh` + script tests; Android `assembleDebug` + `testDebugUnitTest`, release APK build + audit + `apksigner`/`zipalign` checks | ✅ | `.github/workflows/ci.yml` |
+| M0.16 | `release.yml`: tag `vX.Y.Z` (checked against pubspec) → arm64, arm32, x86_64 and universal APKs, V1–V4 signing and verification, payload audit, symbols artifact, GitHub Release with `SHA256SUMS.txt` and `git-cliff` changelog | ✅ (needs the `KEYSTORE_BASE64`, `KEY_ALIAS`, `KEYSTORE_PASSWORD` secrets; first run at M3.9) | `.github/workflows/release.yml` |
+
+Tests added: Rust `backend` (method table sorted and dispatched, init, errors), `data_jobs`, `logging`; Kotlin `MainActivityRoutingTest`; Dart `platform_bridge_test` (decode, spill, errors), `settings_test`, `logger_test` (redaction, ring), `app_test` (setup → shell, engine info, logs, crash banner, locale).
+
+**Exit:** `getBackendInfo` round-trips Dart → Kotlin → Rust on an emulator and a device; logs from Rust appear in the log screen; CI is green; `release.yml` produces signed APKs once the signing secrets exist.
 
 ## M1 Local player
 
 | # | Task | Features | Mornye source / § |
 | --- | --- | --- | --- |
-| M1.1 | `crates/audio`: cpal/AAudio output, Symphonia decoders, rubato, ring buffers, mixer with per-source gains and ramps, equal-power crossfade, seek with flush/prefill, clock with output-latency correction, `player_position_stream` | 1.1, 1.2, 1.3 | IMPLEMENTATION §2 |
+| M1.1 | `crates/audio`: cpal/AAudio output, Symphonia decoders, rubato, ring buffers, mixer with per-source gains and ramps, equal-power crossfade, seek with flush/prefill, clock with output-latency correction, `player_position_stream` (first progress `EventChannel`: `MainActivityProgressStreams.kt`); `NativeCrashTrace` for native panics | 1.1, 1.2, 1.3 | IMPLEMENTATION §2 |
 | M1.2 | Player methods in `kalao-mobile` (`playerLoad` … `playerState`) and UniFFI exports | 1.1–1.3 | §1 |
 | M1.3 | `KaraokeDeck implements QueuedPlaybackDeck`; adapt `music_player_service.dart` (remove AutoMix, autoplay, cast, EQ, ReplayGain parts), `music_player_provider`, `playback_provider`, `playback_session_restore` | 1.1 | `playback_deck.dart`, `music_player_service.dart` |
-| M1.4 | Media session: `third_party/audio_service` fork, `audio_session` focus/noisy handling, headset buttons, notification and lock-screen artwork | 1.5 | `audio_service` fork, `playback_notification.dart` |
-| M1.5 | Import flow: SAF/`file_picker` pick, copy to `media/<sha256>`, `probeAudio` (tags, cover, duration), original/instrumental/lyrics pairing sheet, duplicate detection | 1.7 | §3, `MainActivitySaf*`, `core::tags` |
+| M1.4 | Media session: `third_party/audio_service` fork (MainActivity moves to its cached engine, as Mornye), `audio_session` focus/noisy handling, headset buttons, notification and lock-screen artwork | 1.5 | `audio_service` fork, `playback_notification.dart` |
+| M1.5 | Copy `core::{filename,tags,cover}` (+ the `rustix` vendor patch); import flow: SAF/`file_picker` pick, copy to `media/<sha256>`, `probeAudio` (tags, cover, duration), original/instrumental/lyrics pairing sheet, duplicate detection | 1.7 | §3, `MainActivitySaf*`, `core::tags` |
 | M1.6 | Format support: Symphonia codecs; `importConvert` via `ffmpeg_kit_flutter_new_audio` for Opus/WMA/APE → FLAC | 1.6 | `third_party/ffmpeg_kit…`, `ffmpeg_conversion.dart` |
 | M1.7 | Library schema and services: `song`, `media_file`, `lyric_doc`, `lyric_annotation`, `song_search` tables (DATA_MODEL §2) in `library_schema.dart`; `library_database`, `library_row_mapper`, `cover_store`, `local_library_provider` | 6.1 | `library_*` |
 | M1.8 | Home tab: Recently added, Recently played (history DB), Continue singing; Library screen (grid/list, sort, selection mode) | 6.1 | `home_tab*`, `history_database.dart`, `selection_mode_mixin.dart` |
@@ -118,7 +122,7 @@ Milestones are ordered by dependency; each ends with a tested build on `main` an
 
 | # | Task | Features | Source / § |
 | --- | --- | --- | --- |
-| M6.1 | `crates/stems`: model manager (download from GitHub Releases assets, SHA-256 list in app), ONNX Runtime via `ort` + `onnxruntime-android`, NNAPI/XNNPACK/CPU, chunked inference with overlap-add, checkpoints, FLAC output | 4.1, 4.2 | STEM_SEPARATION §1 |
+| M6.1 | Copy `core::progress` (download progress); `crates/stems`: model manager (download from GitHub Releases assets, SHA-256 list in app), ONNX Runtime via `ort` + `onnxruntime-android`, NNAPI/XNNPACK/CPU, chunked inference with overlap-add, checkpoints, FLAC output | 4.1, 4.2 | STEM_SEPARATION §1 |
 | M6.2 | Benchmark and choose Fast and Quality models on 3 reference devices; confirm licences | 4.2 | — |
 | M6.3 | Stem job service: `BackgroundWorkService` kind `stems`, progress notification with cancel, resume after process death, battery/thermal pause, queue | 4.1 | `BackgroundWorkService.kt` |
 | M6.4 | Stems UI: per-song "Separate", model choice, job list, storage usage (Mornye cache management page) | 4.1, 4.2 | `cache_management_page.dart` |

@@ -6,9 +6,11 @@ How each subsystem is built. Structure and ownership are in ARCHITECTURE.md, the
 
 Every Rust call is a name in `kalao-mobile`'s dispatch (`invoke_application(method, args_json) -> String`), mirrored by a typed static method in `PlatformBridge` and, later, in `kalao-desktop/src/dispatch.rs`. Names are camelCase like Mornye's. Groups:
 
+Implemented so far (M0): `initBackend`, `getBackendInfo`, `getLogs(sinceIndex)`, `clearLogs`, `setLoggingEnabled`; data job `hash_file`; Kotlin-native `getAndroidSdkVersion`, `setScreenAwake`, `start/update/stopBackgroundWork`, `readLastCrashReport`, `clearLastCrashReport`, `recordAppRuntimeError`. The method list lives in `rust_backend/crates/mobile/src/backend.rs` (`METHODS`) and `MainActivity.nativeBackendMethods`.
+
 | Group | Methods |
 | --- | --- |
-| Lifecycle | `initBackend(paths)`, `getBackendInfo`, `getLogs(sinceSeq)`, `clearLogs`, `releaseMemory` |
+| Lifecycle | `initBackend(paths)`, `getBackendInfo`, `getLogs(sinceIndex)`, `clearLogs`, `setLoggingEnabled`, `releaseMemory` |
 | Player | `playerLoad(songId, sources, startMs)`, `playerPlay`, `playerPause`, `playerSeek(ms)`, `playerStop`, `playerSetVolume`, `playerSetStemGains({vocals, instrumental, original})`, `playerSwitchTrack(kind)`, `playerSetKey(semitones)`, `playerSetTempo(rate)`, `playerSetLoop(startMs?, endMs?)`, `playerPrefetch(sources)`, `playerState` |
 | Mic | `micStart(mode: scoring|monitoring|recording, options)`, `micStop`, `micSetMonitorMix(gain, reverb)`, `measureLatency` |
 | Import | `probeAudio(path)` (tags, duration, codec, sha256), `readCover(path)`, `importConvert(path)` (via FFmpeg when Symphonia cannot decode) |

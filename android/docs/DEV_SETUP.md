@@ -5,7 +5,7 @@ Toolchain versions match Mornye (LIBRARIES.md §1).
 ## Current machine status (2026-11-15)
 | Tool | Status |
 | --- | --- |
-| Rust | ✅ cargo/rustc 1.99.1 (targets: wasm32, x86_64-pc-windows-msvc only) |
+| Rust | ✅ cargo/rustc 1.99.1; `scripts/build_rust_backend.sh host` works on this Windows host (Git Bash) |
 | adb | ✅ |
 | Flutter 3.47.8 (FVM) | ❌ not installed |
 | JDK 25 | ❌ not installed |
@@ -37,6 +37,9 @@ gradle -p android/android :app:testDebugUnitTest   # Kotlin tests incl. MainActi
 docker compose -f stem-server/compose.yaml up  # stem gateway + GPU worker (needs NVIDIA container toolkit)
 cargo run -p kalao-ext -- validate path/to/ext # extension CLI (from M5)
 ```
+
+## Pushing workflow changes
+The GitHub CLI token needs the `workflow` scope to push files under `.github/workflows/`: run `gh auth refresh -h github.com -s workflow` once.
 
 ## Releases
 - Tag `vX.Y.Z` → `release.yml` builds per-ABI and universal APKs, signs them (V1–V4) with the release key from CI secrets, audits the Rust payloads, and publishes a GitHub Release with SHA-256 checksums and a `git-cliff` changelog. The update checker reads that release.
