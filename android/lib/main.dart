@@ -20,7 +20,9 @@ Future<void> main() async {
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
-    unawaited(AppCrashService.recordRuntimeError(details.exception, details.stack));
+    unawaited(
+      AppCrashService.recordRuntimeError(details.exception, details.stack),
+    );
   };
   PlatformDispatcher.instance.onError = (error, stack) {
     unawaited(AppCrashService.recordRuntimeError(error, stack));
@@ -35,7 +37,9 @@ Future<void> main() async {
   LogBuffer().verbose = verbose || kDebugMode;
   unawaited(_startBackend(verbose));
 
-  runApp(UncontrolledProviderScope(container: container, child: const KalaoApp()));
+  runApp(
+    UncontrolledProviderScope(container: container, child: const KalaoApp()),
+  );
 }
 
 /// The Android host initialises the Rust library before the first frame; this

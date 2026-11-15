@@ -26,8 +26,6 @@
   "themeSystem": "System",
   "themeLight": "Light",
   "themeDark": "Dark",
-  "settingsDynamicColor": "Wallpaper colors",
-  "settingsDynamicColorSubtitle": "Use Material You colors from your wallpaper when available",
   "settingsLanguage": "Language",
   "settingsDiagnostics": "Diagnostics",
   "settingsVerboseLogging": "Detailed logging",

@@ -7,9 +7,9 @@ Toolchain versions match Mornye (LIBRARIES.md §1).
 | --- | --- |
 | Rust | ✅ cargo/rustc 1.99.1; `scripts/build_rust_backend.sh host` works on this Windows host (Git Bash) |
 | adb | ✅ |
-| Flutter 3.47.8 (FVM) | ❌ not installed |
-| JDK 25 | ❌ not installed |
-| Android SDK 37 / NDK 30.0.16248370 | ❌ not installed (`ANDROID_HOME` unset) |
+| Flutter 3.47.8 (FVM) | ✅ via Scoop `extras/fvm` (`FVM_CACHE_PATH` set). Without Developer Mode `fvm install` can't create its symlink: link it with a junction, `New-Item -ItemType Junction -Path .fvm\versions\3.47.8 -Target $env:FVM_CACHE_PATH\versions\3.47.8` |
+| JDK 25 | ✅ Temurin 25.0.5 via Scoop `java/temurin25-jdk` (`JAVA_HOME` set) |
+| Android SDK 37 / NDK 30.0.16248370 | ✅ via Scoop `main/android-clt` + `sdkmanager`: platform-tools, `platforms;android-37.0`, `build-tools;37.0.0`, NDK, `cmake;4.1.2`; licences accepted; `ANDROID_HOME`/`ANDROID_NDK_HOME` set |
 | Git | ✅ `karaoke/` is the `Brinsleym/kalao` repo; `poc-webapp/` is git-ignored. Private extensions live in a separate private repo |
 
 ## Install

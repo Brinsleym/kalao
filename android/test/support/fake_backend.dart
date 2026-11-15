@@ -57,7 +57,8 @@ class FakeBackend {
       default:
         throw PlatformException(
           code: 'ERROR',
-          message: 'Rust application method is not connected yet: ${call.method}',
+          message:
+              'Rust application method is not connected yet: ${call.method}',
         );
     }
   }

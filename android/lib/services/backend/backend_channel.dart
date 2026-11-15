@@ -25,7 +25,8 @@ abstract class BackendChannel {
 }
 
 /// The backend of the running platform. Tests replace it with [debugOverride].
-BackendChannel get backendChannel => debugOverride ?? MethodChannelBackend.shared;
+BackendChannel get backendChannel =>
+    debugOverride ?? MethodChannelBackend.shared;
 
 @visibleForTesting
 BackendChannel? debugOverride;

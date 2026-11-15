@@ -1,6 +1,5 @@
 // Derived from Mornye (https://github.com/mornyeapp/Mornye), Copyright 2026 zarzet,
 // LGPL-3.0-only. Modified for Kalao.
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,27 +44,16 @@ class KalaoApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final router = ref.watch(routerProvider);
-    return DynamicColorBuilder(
-      builder: (lightDynamic, darkDynamic) {
-        final useDynamic = settings.useDynamicColor;
-        final ColorScheme light = useDynamic && lightDynamic != null
-            ? lightDynamic
-            : AppTheme.seededScheme(Brightness.light);
-        final ColorScheme dark = useDynamic && darkDynamic != null
-            ? darkDynamic
-            : AppTheme.seededScheme(Brightness.dark);
-        return MaterialApp.router(
-          title: AppInfo.appName,
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.build(light),
-          darkTheme: AppTheme.build(dark),
-          themeMode: settings.themeMode,
-          locale: localeForTag(settings.localeTag),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          routerConfig: router,
-        );
-      },
+    return MaterialApp.router(
+      title: AppInfo.appName,
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.build(AppTheme.seededScheme(Brightness.light)),
+      darkTheme: AppTheme.build(AppTheme.seededScheme(Brightness.dark)),
+      themeMode: settings.themeMode,
+      locale: localeForTag(settings.localeTag),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      routerConfig: router,
     );
   }
 }

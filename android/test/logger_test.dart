@@ -2,9 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kalao/utils/logger.dart';
 
 void main() {
-  setUp(() => LogBuffer()
-    ..clear()
-    ..verbose = false);
+  setUp(
+    () => LogBuffer()
+      ..clear()
+      ..verbose = false,
+  );
 
   test('redacts tokens, keys and the MyMemory email parameter', () {
     final text = redactDiagnosticText(

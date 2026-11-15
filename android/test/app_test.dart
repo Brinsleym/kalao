@@ -51,7 +51,11 @@ void main() {
     );
     expect(find.textContaining('kalao-mobile 0.1.0'), findsOneWidget);
 
-    await tester.scrollUntilVisible(find.text('View logs'), -200, scrollable: list);
+    await tester.scrollUntilVisible(
+      find.text('View logs'),
+      -200,
+      scrollable: list,
+    );
     await tester.tap(find.text('View logs'));
     await tester.pumpAndSettle();
     expect(find.textContaining('initialized'), findsOneWidget);
@@ -66,7 +70,10 @@ void main() {
     await tester.tap(find.text('Dismiss'));
     await tester.pumpAndSettle();
     expect(find.byType(MaterialBanner), findsNothing);
-    expect(backend.calls.map((c) => c.method), contains('clearLastCrashReport'));
+    expect(
+      backend.calls.map((c) => c.method),
+      contains('clearLastCrashReport'),
+    );
   });
 
   testWidgets('the chosen language is applied', (tester) async {

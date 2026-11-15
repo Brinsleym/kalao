@@ -15,7 +15,6 @@ void main() {
     const settings = AppSettings(
       setupCompleted: true,
       themeMode: ThemeMode.dark,
-      useDynamicColor: false,
       localeTag: 'zh-Hant',
       verboseLogging: true,
     );
@@ -57,7 +56,10 @@ void main() {
     expect(settings.themeMode, ThemeMode.light);
     expect(settings.localeTag, 'ja');
     expect(settings.verboseLogging, isTrue);
-    expect(backend.calls.map((call) => call.method), contains('setLoggingEnabled'));
+    expect(
+      backend.calls.map((call) => call.method),
+      contains('setLoggingEnabled'),
+    );
   });
 
   test('locale tags map to supported locales', () {

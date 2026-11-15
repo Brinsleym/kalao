@@ -143,9 +143,7 @@ class AppLogger {
     final errorText = error == null
         ? null
         : _truncate(
-            redactDiagnosticText(
-              stack == null ? '$error' : '$error\n$stack',
-            ),
+            redactDiagnosticText(stack == null ? '$error' : '$error\n$stack'),
           );
     final entry = LogEntry(
       timestamp: DateTime.now(),

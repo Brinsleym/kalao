@@ -48,9 +48,6 @@ class SettingsNotifier extends Notifier<AppSettings> {
   Future<void> setThemeMode(ThemeMode mode) =>
       _save(state.copyWith(themeMode: mode));
 
-  Future<void> setUseDynamicColor(bool value) =>
-      _save(state.copyWith(useDynamicColor: value));
-
   Future<void> setLocaleTag(String? tag) =>
       _save(state.copyWith(localeTag: () => tag));
 

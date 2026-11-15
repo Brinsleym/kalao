@@ -9,7 +9,10 @@ class AppTheme {
   AppTheme._();
 
   static ColorScheme seededScheme(Brightness brightness) =>
-      ColorScheme.fromSeed(seedColor: AppTokens.brandSeed, brightness: brightness);
+      ColorScheme.fromSeed(
+        seedColor: AppTokens.brandSeed,
+        brightness: brightness,
+      );
 
   static ThemeData build(ColorScheme scheme) {
     final base = ThemeData(useMaterial3: true, colorScheme: scheme);
@@ -32,7 +35,9 @@ class AppTheme {
       listTileTheme: const ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(horizontal: AppTokens.space16),
       ),
-      snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),
+      snackBarTheme: const SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+      ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: scheme.surfaceContainer,
         indicatorColor: scheme.secondaryContainer,

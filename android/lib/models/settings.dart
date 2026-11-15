@@ -10,15 +10,14 @@ class AppSettings {
   const AppSettings({
     this.setupCompleted = false,
     this.themeMode = ThemeMode.system,
-    this.useDynamicColor = true,
     this.localeTag,
     this.verboseLogging = false,
   });
 
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
     setupCompleted: json['setupCompleted'] as bool? ?? false,
-    themeMode: ThemeMode.values.asNameMap()[json['themeMode']] ?? ThemeMode.system,
-    useDynamicColor: json['useDynamicColor'] as bool? ?? true,
+    themeMode:
+        ThemeMode.values.asNameMap()[json['themeMode']] ?? ThemeMode.system,
     localeTag: json['localeTag'] as String?,
     verboseLogging: json['verboseLogging'] as bool? ?? false,
   );
@@ -26,9 +25,6 @@ class AppSettings {
   /// The user finished the first-run setup.
   final bool setupCompleted;
   final ThemeMode themeMode;
-
-  /// Material You colours from the wallpaper (Android 12+).
-  final bool useDynamicColor;
 
   /// A BCP-47 tag from `supportedLocales`, or null to follow the system.
   final String? localeTag;
@@ -39,7 +35,6 @@ class AppSettings {
   Map<String, dynamic> toJson() => {
     'setupCompleted': setupCompleted,
     'themeMode': themeMode.name,
-    'useDynamicColor': useDynamicColor,
     'localeTag': localeTag,
     'verboseLogging': verboseLogging,
   };
@@ -47,13 +42,11 @@ class AppSettings {
   AppSettings copyWith({
     bool? setupCompleted,
     ThemeMode? themeMode,
-    bool? useDynamicColor,
     String? Function()? localeTag,
     bool? verboseLogging,
   }) => AppSettings(
     setupCompleted: setupCompleted ?? this.setupCompleted,
     themeMode: themeMode ?? this.themeMode,
-    useDynamicColor: useDynamicColor ?? this.useDynamicColor,
     localeTag: localeTag != null ? localeTag() : this.localeTag,
     verboseLogging: verboseLogging ?? this.verboseLogging,
   );
@@ -63,7 +56,6 @@ class AppSettings {
       other is AppSettings &&
       other.setupCompleted == setupCompleted &&
       other.themeMode == themeMode &&
-      other.useDynamicColor == useDynamicColor &&
       other.localeTag == localeTag &&
       other.verboseLogging == verboseLogging;
 
@@ -71,7 +63,6 @@ class AppSettings {
   int get hashCode => Object.hash(
     setupCompleted,
     themeMode,
-    useDynamicColor,
     localeTag,
     verboseLogging,
   );

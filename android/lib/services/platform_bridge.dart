@@ -81,9 +81,8 @@ class PlatformBridge {
 
   // Lifecycle and diagnostics (Rust)
 
-  static Future<BackendInfo> getBackendInfo() async => BackendInfo.fromJson(
-    await _requiredMap('getBackendInfo'),
-  );
+  static Future<BackendInfo> getBackendInfo() async =>
+      BackendInfo.fromJson(await _requiredMap('getBackendInfo'));
 
   static Future<NativeLogPage> getLogs({int sinceIndex = 0}) async {
     final json = await _requiredMap('getLogs', {'sinceIndex': sinceIndex});
@@ -119,8 +118,8 @@ class PlatformBridge {
   static Future<int> getAndroidSdkVersion() async =>
       await backendChannel.invokeMethod<int>('getAndroidSdkVersion') ?? 0;
 
-  static Future<void> setScreenAwake(bool enabled) => backendChannel
-      .invokeMethod<void>('setScreenAwake', {'enabled': enabled});
+  static Future<void> setScreenAwake(bool enabled) =>
+      backendChannel.invokeMethod<void>('setScreenAwake', {'enabled': enabled});
 
   /// Starts (or retitles) foreground work of [kind]. Returns false when
   /// Android refused the foreground service; the work then runs anyway.

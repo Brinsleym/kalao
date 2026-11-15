@@ -40,7 +40,9 @@ class _LogScreenState extends State<LogScreen> {
     try {
       final page = await PlatformBridge.getLogs();
       final today = DateTime.now();
-      final entries = [for (final entry in page.entries) _fromNative(entry, today)];
+      final entries = [
+        for (final entry in page.entries) _fromNative(entry, today),
+      ];
       if (mounted) setState(() => _native = entries);
     } catch (_) {
       // The engine is unavailable (for example in widget tests).
@@ -50,9 +52,18 @@ class _LogScreenState extends State<LogScreen> {
   static LogEntry _fromNative(NativeLogEntry entry, DateTime day) {
     // Rust stamps entries as HH:MM:SS.mmm local time.
     final parts = entry.timestamp.split(RegExp('[:.]'));
-    int part(int index) => index < parts.length ? int.tryParse(parts[index]) ?? 0 : 0;
+    int part(int index) =>
+        index < parts.length ? int.tryParse(parts[index]) ?? 0 : 0;
     return LogEntry(
-      timestamp: DateTime(day.year, day.month, day.day, part(0), part(1), part(2), part(3)),
+      timestamp: DateTime(
+        day.year,
+        day.month,
+        day.day,
+        part(0),
+        part(1),
+        part(2),
+        part(3),
+      ),
       level: switch (entry.level) {
         'DEBUG' => LogLevel.debug,
         'WARN' => LogLevel.warn,
@@ -66,7 +77,8 @@ class _LogScreenState extends State<LogScreen> {
   }
 
   List<LogEntry> get _entries =>
-      [...LogBuffer().entries, ..._native]..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      [...LogBuffer().entries, ..._native]
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
   Future<void> _copy() async {
     final l10n = AppLocalizations.of(context);
@@ -111,7 +123,8 @@ class _LogScreenState extends State<LogScreen> {
               child: ListView.separated(
                 padding: const EdgeInsets.all(AppTokens.space12),
                 itemCount: entries.length,
-                separatorBuilder: (_, _) => const SizedBox(height: AppTokens.space4),
+                separatorBuilder: (_, _) =>
+                    const SizedBox(height: AppTokens.space4),
                 itemBuilder: (context, index) {
                   final entry = entries[index];
                   final color = switch (entry.level) {

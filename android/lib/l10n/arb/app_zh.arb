@@ -26,8 +26,6 @@
   "themeSystem": "跟随系统",
   "themeLight": "浅色",
   "themeDark": "深色",
-  "settingsDynamicColor": "壁纸配色",
-  "settingsDynamicColorSubtitle": "在支持时使用来自壁纸的 Material You 配色",
   "settingsLanguage": "语言",
   "settingsDiagnostics": "诊断",
   "settingsVerboseLogging": "详细日志",

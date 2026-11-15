@@ -37,13 +37,6 @@ class SettingsTab extends ConsumerWidget {
             title: l10n.settingsAppearance,
             children: [
               const ThemeModeTile(),
-              SwitchListTile(
-                secondary: const Icon(Icons.palette_outlined),
-                title: Text(l10n.settingsDynamicColor),
-                subtitle: Text(l10n.settingsDynamicColorSubtitle),
-                value: settings.useDynamicColor,
-                onChanged: notifier.setUseDynamicColor,
-              ),
               const LanguageTile(),
             ],
           ),
@@ -136,14 +129,16 @@ class ThemeModeTile extends ConsumerWidget {
         padding: const EdgeInsets.only(top: AppTokens.space8),
         child: SegmentedButton<ThemeMode>(
           segments: [
-            ButtonSegment(value: ThemeMode.system, label: Text(l10n.themeSystem)),
+            ButtonSegment(
+              value: ThemeMode.system,
+              label: Text(l10n.themeSystem),
+            ),
             ButtonSegment(value: ThemeMode.light, label: Text(l10n.themeLight)),
             ButtonSegment(value: ThemeMode.dark, label: Text(l10n.themeDark)),
           ],
           selected: {mode},
-          onSelectionChanged: (selection) => ref
-              .read(settingsProvider.notifier)
-              .setThemeMode(selection.first),
+          onSelectionChanged: (selection) =>
+              ref.read(settingsProvider.notifier).setThemeMode(selection.first),
         ),
       ),
     );

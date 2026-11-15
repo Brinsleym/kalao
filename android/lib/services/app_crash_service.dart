@@ -36,7 +36,10 @@ class AppCrashService {
 
   /// Saves context for a later confirmed process crash. A handled Flutter
   /// error alone must not produce an "app crashed" message on the next launch.
-  static Future<void> recordRuntimeError(Object error, StackTrace? stack) async {
+  static Future<void> recordRuntimeError(
+    Object error,
+    StackTrace? stack,
+  ) async {
     _log.e('Unhandled error', error, stack);
     try {
       final entries = LogBuffer().entries;
@@ -62,7 +65,9 @@ class AppCrashService {
       return CrashReport(
         raw: raw,
         error: json['error'] as String? ?? '',
-        time: millis is int ? DateTime.fromMillisecondsSinceEpoch(millis) : null,
+        time: millis is int
+            ? DateTime.fromMillisecondsSinceEpoch(millis)
+            : null,
       );
     } catch (error) {
       _log.w('Could not read the last crash report', error);

@@ -26,8 +26,6 @@
   "themeSystem": "システム",
   "themeLight": "ライト",
   "themeDark": "ダーク",
-  "settingsDynamicColor": "壁紙の色",
-  "settingsDynamicColorSubtitle": "対応している場合は壁紙の Material You カラーを使用します",
   "settingsLanguage": "言語",
   "settingsDiagnostics": "診断",
   "settingsVerboseLogging": "詳細なログ",

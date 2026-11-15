@@ -26,8 +26,6 @@
   "themeSystem": "跟隨系統",
   "themeLight": "淺色",
   "themeDark": "深色",
-  "settingsDynamicColor": "桌布配色",
-  "settingsDynamicColorSubtitle": "在支援時使用來自桌布的 Material You 配色",
   "settingsLanguage": "語言",
   "settingsDiagnostics": "診斷",
   "settingsVerboseLogging": "詳細記錄",
