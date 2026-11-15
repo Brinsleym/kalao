@@ -4,19 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kalao/app.dart';
+import 'package:kalao/providers/library_provider.dart';
 import 'package:kalao/providers/settings_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/fake_backend.dart';
+import 'support/test_services.dart';
+
+late LibraryServices _services;
 
 Future<void> pumpApp(WidgetTester tester, Map<String, Object> prefs) async {
   SharedPreferences.setMockInitialValues(prefs);
   final preferences = await SharedPreferences.getInstance();
+  _services = (await tester.runAsync(openTestServices))!;
+  addTearDown(() => tester.runAsync(() => closeTestServices(_services)));
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [sharedPreferencesProvider.overrideWithValue(preferences)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(preferences),
+        ...testOverrides(_services),
+      ],
       child: const KalaoApp(),
     ),
+  );
+  await tester.runAsync(
+    () => Future<void>.delayed(const Duration(milliseconds: 50)),
   );
   await tester.pumpAndSettle();
 }

@@ -7,9 +7,9 @@
   "navExtensions": "Extensions",
   "navSettings": "Settings",
   "homeEmptyTitle": "Nothing to sing yet",
-  "homeEmptyBody": "Imported songs and your recent plays will appear here.",
+  "homeEmptyBody": "Import songs with the button below. Your recent plays will appear here.",
   "libraryEmptyTitle": "Your library is empty",
-  "libraryEmptyBody": "Song import arrives in the next update.",
+  "libraryEmptyBody": "Import an original and, if you have one, its instrumental. Kalao pairs them for you.",
   "queueEmptyTitle": "The queue is empty",
   "queueEmptyBody": "Songs you queue for singing will appear here.",
   "extensionsEmptyTitle": "No extensions installed",
@@ -46,5 +46,103 @@
   "crashBannerTitle": "Kalao closed unexpectedly last time. The report stays on this device.",
   "crashBannerCopy": "Copy report",
   "crashBannerDismiss": "Dismiss",
-  "crashCopied": "Crash report copied"
+  "crashCopied": "Crash report copied",
+  "actionCancel": "Cancel",
+  "actionDelete": "Delete",
+  "actionSave": "Save",
+  "homeContinueSinging": "Continue singing",
+  "homeRecentlyAdded": "Recently added",
+  "homeRecentlyPlayed": "Recently played",
+  "importAction": "Import",
+  "importDone": "{count, plural, =1{Imported 1 song} other{Imported {count} songs}}",
+  "@importDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importDuplicate": "Already in your library",
+  "importHint": "Check each song: Kalao matched instrumentals and lyrics by file name and length.",
+  "importInstrumental": "Instrumental",
+  "importLyricsFile": "Lyrics file",
+  "importNoAudio": "No audio or lyrics files were selected",
+  "importNone": "None",
+  "importPickTitle": "Choose songs, instrumentals and lyrics",
+  "importPreparing": "Reading files…",
+  "importTitle": "Import songs",
+  "importWorking": "Importing…",
+  "libraryDeleteBody": "The audio files are removed from Kalao's storage. Files elsewhere on your device are not touched.",
+  "libraryDeleteTitle": "{count, plural, =1{Delete 1 song?} other{Delete {count} songs?}}",
+  "@libraryDeleteTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "librarySelectAll": "Select all",
+  "librarySelected": "{count} selected",
+  "@librarySelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "libraryShowGrid": "Show as grid",
+  "libraryShowList": "Show as list",
+  "librarySort": "Sort",
+  "lyricsChooseFile": "Choose .lrc or .txt",
+  "lyricsEmptyError": "Paste lyrics or choose a file first",
+  "lyricsImport": "Add lyrics",
+  "lyricsImportHint": "Paste plain lyrics or LRC. Section labels like [Chorus] or 【副歌】 are recognised; Chinese gets pinyin automatically.",
+  "lyricsImportTitle": "Lyrics",
+  "lyricsNextLine": "Next line",
+  "lyricsNone": "No lyrics yet",
+  "lyricsNoneBody": "Add lyrics by pasting text or choosing an .lrc or .txt file.",
+  "lyricsOptions": "Lyrics options",
+  "lyricsPasteLabel": "Lyrics",
+  "lyricsPreviousLine": "Previous line",
+  "lyricsSeekHere": "play from this line",
+  "lyricsSelectLine": "highlight this line",
+  "lyricsShowPinyin": "Show pinyin",
+  "playerBack10": "Back 10 seconds",
+  "playerForward10": "Forward 10 seconds",
+  "playerInstrumental": "Instrumental",
+  "playerNoInstrumental": "Add an instrumental to switch to karaoke.",
+  "playerNothingPlaying": "Nothing playing",
+  "playerNothingPlayingBody": "Pick a song from Home or Library.",
+  "playerOriginal": "Original",
+  "playerPause": "Pause",
+  "playerPlay": "Play",
+  "playerSeek": "Position",
+  "playerVocalGuide": "Vocal guide",
+  "searchClear": "Clear search",
+  "searchHint": "Search title, artist or pinyin",
+  "searchNoResults": "No songs match",
+  "sectionBridge": "Bridge",
+  "sectionChorus": "Chorus",
+  "sectionInterlude": "Interlude",
+  "sectionIntro": "Intro",
+  "sectionOther": "Section",
+  "sectionOutro": "Outro",
+  "sectionPostChorus": "Post-chorus",
+  "sectionPreChorus": "Pre-chorus",
+  "sectionVerse": "Verse",
+  "settingsCustomFont": "Lyrics font",
+  "settingsCustomFontDefault": "Theme font. Tap to choose a .ttf or .otf file",
+  "settingsCustomFontReset": "Use the theme font",
+  "settingsCustomFontSample": "月亮代表我的心 · Aa",
+  "settingsDynamicColor": "Material You colours",
+  "settingsDynamicColorSubtitle": "Use colours from your wallpaper (Android 12 and later)",
+  "settingsLyrics": "Lyrics",
+  "settingsLyricsSize": "Lyrics size",
+  "songArtist": "Artist",
+  "songHasInstrumental": "Has an instrumental",
+  "songHasLyrics": "Has lyrics",
+  "songTitle": "Title",
+  "sortArtist": "Artist",
+  "sortRecentlyAdded": "Recently added",
+  "sortTitle": "Title"
 }
