@@ -60,12 +60,26 @@ jobs:
         run: flutter pub get
 
       - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+        id: format
+        run: |
+          dart format lib test
+          git diff > /tmp/dart-format.patch
+          git diff --stat --exit-code
 
+      - name: Upload the formatting fix
+        if: failure() && steps.format.outcome == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dart-format-patch
+          path: /tmp/dart-format.patch
+
+      # Analyze and test still run when only formatting failed.
       - name: Analyze
+        if: success() || steps.format.outcome == 'failure'
         run: flutter analyze
 
       - name: Run tests
+        if: success() || steps.format.outcome == 'failure'
         run: flutter test
 
   rust:

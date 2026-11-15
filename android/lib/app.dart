@@ -48,11 +48,11 @@ class KalaoApp extends ConsumerWidget {
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) {
         final useDynamic = settings.useDynamicColor;
-        final light = useDynamic && lightDynamic != null
-            ? lightDynamic.harmonized()
+        final ColorScheme light = useDynamic && lightDynamic != null
+            ? lightDynamic
             : AppTheme.seededScheme(Brightness.light);
-        final dark = useDynamic && darkDynamic != null
-            ? darkDynamic.harmonized()
+        final ColorScheme dark = useDynamic && darkDynamic != null
+            ? darkDynamic
             : AppTheme.seededScheme(Brightness.dark);
         return MaterialApp.router(
           title: AppInfo.appName,
