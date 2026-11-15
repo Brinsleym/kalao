@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="kalao_brand">#E8505B</color>
-    <color name="launch_background">#FFFBF8</color>
+    <!-- Brand colours (android/docs/BRANDING.md) -->
+    <color name="kalao_brand">#31572C</color>
+    <color name="launch_background">#F5F7F4</color>
 </resources>

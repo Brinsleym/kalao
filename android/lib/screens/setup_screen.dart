@@ -27,12 +27,14 @@ class SetupScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(AppTokens.space24),
               children: [
                 const SizedBox(height: AppTokens.space32),
-                ExcludeSemantics(
-                  child: Icon(
-                    Icons.mic,
-                    size: 72,
-                    color: theme.colorScheme.primary,
-                  ),
+                // Brand symbol: primary green on light, the light tint on dark
+                // (branding guidelines: primary, ink or white only).
+                Image.asset(
+                  theme.brightness == Brightness.dark
+                      ? 'assets/branding/kalao-symbol-light-512.png'
+                      : 'assets/branding/kalao-symbol-fern-512.png',
+                  height: 96,
+                  excludeFromSemantics: true,
                 ),
                 const SizedBox(height: AppTokens.space24),
                 Text(

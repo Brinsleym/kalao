@@ -26,7 +26,7 @@ class AppSettings {
     this.themeMode = ThemeMode.system,
     this.localeTag,
     this.verboseLogging = false,
-    this.dynamicColor = true,
+    this.dynamicColor = false,
     this.lyricsSize = LyricsSize.m,
     this.customFontPath,
     this.showPinyin = true,
@@ -38,7 +38,7 @@ class AppSettings {
         ThemeMode.values.asNameMap()[json['themeMode']] ?? ThemeMode.system,
     localeTag: json['localeTag'] as String?,
     verboseLogging: json['verboseLogging'] as bool? ?? false,
-    dynamicColor: json['dynamicColor'] as bool? ?? true,
+    dynamicColor: json['dynamicColor'] as bool? ?? false,
     lyricsSize:
         LyricsSize.values.asNameMap()[json['lyricsSize']] ?? LyricsSize.m,
     customFontPath: json['customFontPath'] as String?,
@@ -55,7 +55,8 @@ class AppSettings {
   /// Keep debug and info log entries (Dart and Rust).
   final bool verboseLogging;
 
-  /// Material You colours from the wallpaper (Android 12+), else Kalao coral.
+  /// Material You colours from the wallpaper (Android 12+) instead of the
+  /// Kalao brand scheme. Off by default so the app looks like Kalao.
   final bool dynamicColor;
   final LyricsSize lyricsSize;
 

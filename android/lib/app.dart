@@ -51,7 +51,7 @@ class KalaoApp extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final router = ref.watch(routerProvider);
     // Material You (Mornye's dynamic_color_wrapper): wallpaper colours on
-    // Android 12+ when enabled, otherwise the Kalao coral seed.
+    // Android 12+ when enabled, otherwise the Kalao brand scheme.
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) {
         final useDynamic =

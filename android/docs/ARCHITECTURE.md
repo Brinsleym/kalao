@@ -30,7 +30,7 @@ There is no account server. The only Kalao-run service is the optional stem serv
 ## 2. Repository layout (mirrors Mornye's root)
 
 ```
-karaoke/                         # git root of Brinsleym/kalao
+karaoke/                         # git root of kalaoapp/Kalao
 ├── rust_backend/                # shared Cargo workspace (§4), Mornye template
 ├── scripts/                     # build_rust_backend.sh, check_rust_backend.sh, build_android.sh, check_backend_apk.py
 ├── android/                     # the Flutter app for Android (this project)
@@ -52,7 +52,7 @@ Mornye keeps one Flutter project at its root for every platform. Kalao keeps one
 | Folder | Role (as in Mornye) | Kalao contents |
 | --- | --- | --- |
 | `main.dart`, `app.dart` | Startup, `ProviderScope`, `MaterialApp.router`, `_routerProvider` with `initialLocationForAppState` (`/setup` → `/tutorial` → `/whats-new` → `/`) | Same flow |
-| `constants/` | `app_info.dart` (version, repo URLs, donation URL), `language_choices.dart` | `AppInfo.donateUrl = https://ko-fi.com/brinsley`, `AppInfo.githubRepo = Brinsleym/kalao` |
+| `constants/` | `app_info.dart` (version, repo URLs, donation URL), `language_choices.dart` | `AppInfo.donateUrl = https://ko-fi.com/brinsley`, `AppInfo.githubRepo = kalaoapp/Kalao` |
 | `models/` | Plain data, `json_serializable` (`settings.dart` + `.g.dart`, `track.dart`, `extension.dart`, `theme_settings.dart`) | `settings.dart`, `song.dart`, `lyrics_layers.dart`, `stem_job.dart`, `party.dart`, `extension.dart`, `theme_settings.dart` |
 | `services/` | All non-UI logic; one file per concern; large services split with `part` files | Mornye services kept (§MORNYE_REUSE), plus `karaoke_deck.dart`, `lyrics_annotation_service.dart`, `stem_service.dart`, `scoring_service.dart`, `party_host_service.dart`, `party_guest_service.dart` |
 | `services/backend/` | `BackendChannel`, `MethodChannelBackend`, `RustFfiBackend`, transports | Copied unchanged (renamed) |

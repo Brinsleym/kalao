@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Microphone glyph from Material Icons (Apache-2.0), centred in the 108dp adaptive canvas. -->
+<!-- Kalao symbol (kalaoapp/branding icons/app-icon-fern.svg): white bars on the
+     primary tile. The 100-unit icon tile maps onto the 72dp visible area of the
+     108dp adaptive canvas. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:scaleX="2.25"
-        android:scaleY="2.25"
-        android:translateX="27"
-        android:translateY="27">
+        android:scaleX="0.72"
+        android:scaleY="0.72"
+        android:translateX="18"
+        android:translateY="18">
         <path
-            android:fillColor="#FFFFFF"
-            android:pathData="M12,14c1.66,0 2.99,-1.34 2.99,-3L15,5c0,-1.66 -1.34,-3 -3,-3S9,3.34 9,5v6c0,1.66 1.34,3 3,3zM17.3,11c0,3 -2.54,5.1 -5.3,5.1S6.7,14 6.7,11L5,11c0,3.41 2.72,6.23 6,6.72L11,21h2v-3.28c3.28,-0.48 6,-3.3 6,-6.72h-1.7z" />
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M28.04,37.08h0.00a3.23,3.23 0,0 1,3.23,3.23v3.87a3.23,3.23 0,0 1,-3.23,3.23h-0.00a3.23,3.23 0,0 1,-3.23,-3.23v-3.87a3.23,3.23 0,0 1,3.23,-3.23zM38.38,37.08h0.00a3.23,3.23 0,0 1,3.23,3.23v15.50a3.23,3.23 0,0 1,-3.23,3.23h-0.00a3.23,3.23 0,0 1,-3.23,-3.23v-15.50a3.23,3.23 0,0 1,3.23,-3.23zM50.00,24.17h-0.01a5.17,5.17 0,0 1,5.17,5.17v41.33a5.17,5.17 0,0 1,-5.17,5.17h0.01a5.17,5.17 0,0 1,-5.17,-5.17v-41.33a5.17,5.17 0,0 1,5.17,-5.17zM61.63,37.08h0.00a3.23,3.23 0,0 1,3.23,3.23v15.50a3.23,3.23 0,0 1,-3.23,3.23h-0.00a3.23,3.23 0,0 1,-3.23,-3.23v-15.50a3.23,3.23 0,0 1,3.23,-3.23zM71.96,37.08h0.00a3.23,3.23 0,0 1,3.23,3.23v3.87a3.23,3.23 0,0 1,-3.23,3.23h-0.00a3.23,3.23 0,0 1,-3.23,-3.23v-3.87a3.23,3.23 0,0 1,3.23,-3.23z" />
     </group>
 </vector>

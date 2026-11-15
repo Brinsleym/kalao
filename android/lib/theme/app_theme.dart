@@ -9,11 +9,37 @@ import 'package:kalao/theme/app_tokens.dart';
 class AppTheme {
   AppTheme._();
 
-  static ColorScheme seededScheme(Brightness brightness) =>
-      ColorScheme.fromSeed(
-        seedColor: AppTokens.brandSeed,
-        brightness: brightness,
-      );
+  /// Kalao's own scheme, used when Material You is off or unavailable.
+  /// Material's tonal palette from the brand primary fills every role; the
+  /// six brand colours then pin the roles they define (BRANDING.md).
+  static ColorScheme seededScheme(Brightness brightness) {
+    final base = ColorScheme.fromSeed(
+      seedColor: AppTokens.brandPrimary,
+      brightness: brightness,
+    );
+    return brightness == Brightness.light
+        ? base.copyWith(
+            primary: AppTokens.brandPrimary,
+            onPrimary: Colors.white,
+            primaryContainer: AppTokens.brandContainer,
+            onPrimaryContainer: AppTokens.brandDeep,
+            surface: AppTokens.brandSurface,
+            onSurface: AppTokens.brandInk,
+            inverseSurface: AppTokens.brandInk,
+            onInverseSurface: AppTokens.brandSurface,
+          )
+        : base.copyWith(
+            primary: AppTokens.brandLight,
+            onPrimary: AppTokens.brandDeep,
+            primaryContainer: AppTokens.brandPrimary,
+            onPrimaryContainer: AppTokens.brandContainer,
+            surface: AppTokens.brandInk,
+            onSurface: AppTokens.brandContainer,
+            inverseSurface: AppTokens.brandSurface,
+            onInverseSurface: AppTokens.brandInk,
+            inversePrimary: AppTokens.brandPrimary,
+          );
+  }
 
   /// A Flutter scheme from dynamic_color's (`material_ui`) scheme, as in
   /// Mornye's `dynamic_color_wrapper.dart`.

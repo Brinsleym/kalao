@@ -16,5 +16,5 @@ Third-party components retain their own copyrights and licenses:
 - Rust crates: see rust_backend/Cargo.lock; licences are listed by
   `cargo about` / the in-app Licences page.
 - Flutter packages: listed on the in-app Licences page.
-- The launcher icon uses the microphone glyph from Material Icons
-  (Apache License 2.0, Google).
+- The Kalao name, logo and symbol (kalaoapp/branding) identify the official
+  project; forks should use their own branding.

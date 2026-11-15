@@ -163,7 +163,7 @@ Derived from Mornye Link (`crates/link`):
 
 ## 14. Updates (9.8)
 
-Mornye `update_checker.dart` + `apk_downloader.dart`: once a day if enabled, read `api.github.com/repos/Brinsleym/kalao/releases/latest`, compare versions, pick the APK for the device ABI (arm64 / arm32 / universal), and show `update_dialog.dart` with the changelog. Only when the user taps Update: download to cache with a progress notification, verify the SHA-256 from the release's checksums file, then hand the APK to the package installer (`installApk`, `REQUEST_INSTALL_PACKAGES`). "Open release page" is always offered.
+Mornye `update_checker.dart` + `apk_downloader.dart`: once a day if enabled, read `api.github.com/repos/kalaoapp/Kalao/releases/latest`, compare versions, pick the APK for the device ABI (arm64 / arm32 / universal), and show `update_dialog.dart` with the changelog. Only when the user taps Update: download to cache with a progress notification, verify the SHA-256 from the release's checksums file, then hand the APK to the package installer (`installApk`, `REQUEST_INSTALL_PACKAGES`). "Open release page" is always offered.
 
 ## 15. Diagnostics (9.5)
 

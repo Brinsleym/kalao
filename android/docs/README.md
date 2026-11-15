@@ -21,6 +21,7 @@ This folder (`android/`) is the Android app. Desktop and web will live in their 
 | [DECISIONS.md](DECISIONS.md) | Owner decisions, ADRs, remaining open questions |
 | [ROADMAP.md](ROADMAP.md) | Milestones M0–M8 as task lists covering every feature, plus a coverage table |
 | [DEV_SETUP.md](DEV_SETUP.md) | Toolchain, build and test commands |
+| [BRANDING.md](BRANDING.md) | Brand colours, the app's Material colour scheme, icons and typography (from [kalaoapp/branding](https://github.com/kalaoapp/branding)) |
 
 ## Guiding principles
 
