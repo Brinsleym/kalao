@@ -1,0 +1,33 @@
+name: kalao
+description: Kalao, an on-device karaoke and lyrics-learning app.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.10.0
+
+# Versions follow Mornye's pins (docs/LIBRARIES.md). Packages are added in the
+# milestone that first uses them.
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.3
+  flutter_riverpod: ^3.4.2
+  go_router: ^18.1.2
+  shared_preferences: ^2.5.6
+  # v11 removes legacy Android readers; keep Mornye's compatibility release.
+  flutter_secure_storage: 10.3.4
+  path_provider: ^2.1.6
+  path: ^1.9.1
+  dynamic_color: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true

@@ -2,7 +2,7 @@
 /poc-webapp/
 
 # Private extensions are never committed
-extensions/
+/android/extensions/
 *.kalaoext
 
 # Secrets and signing
@@ -11,7 +11,34 @@ key.properties
 *.jks
 *.keystore
 
-# Build output
-target/
-build/
+# Operating system and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Rust build output and generated bindings
+/rust_backend/target/
+
+# Flutter and Dart
 .dart_tool/
+.fvm/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+/android/build/
+/android/coverage/
+/android/lib/l10n/app_localizations*.dart
+*.apk
+*.aab
+
+# Android Gradle state
+/android/android/.gradle/
+/android/android/.kotlin/
+/android/android/app/build/
+/android/android/build/
+/android/android/local.properties
+
+# Python
+__pycache__/
