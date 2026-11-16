@@ -7,6 +7,9 @@ mod backend;
 mod cancellation;
 mod data_jobs;
 mod logging;
+mod lyrics;
+mod media;
+mod player;
 
 uniffi::setup_scaffolding!();
 

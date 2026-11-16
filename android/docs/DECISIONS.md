@@ -17,7 +17,7 @@
 | Q11 | Distribution and payments | **GitHub Releases only.** No Google Play, no other stores. Donations only through the external link `https://ko-fi.com/brinsley`, never in-app |
 | Q12 | Translation provider | **MyMemory only**, called from the device. Azure is dropped |
 | Q13 | Accounts | **None.** No sign-in (Google or otherwise), no account server, no sync. Everything runs on-device; libraries move between devices with backup and restore (FEATURES.md §7) |
-| Q14 | Licence | **GPL-3.0** (the `LICENSE` in `Brinsleym/kalao`); `[workspace.package] license = "GPL-3.0-only"`. Dependencies and stem models must be GPL-3.0-compatible |
+| Q14 | Licence | **GPL-3.0** (the `LICENSE` in `kalaoapp/Kalao`); `[workspace.package] license = "GPL-3.0-only"`. Dependencies and stem models must be GPL-3.0-compatible |
 
 ## Open questions
 

@@ -2,6 +2,7 @@
 // LGPL-3.0-only. Modified for Kalao.
 //! Lyrics contracts shared by built-in providers, extension hosts and exports.
 
+pub mod doc;
 pub mod errors;
 
 pub(crate) mod json;

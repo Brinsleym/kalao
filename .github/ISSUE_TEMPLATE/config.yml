@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Extension authoring guide
-    url: https://github.com/Brinsleym/kalao/blob/main/android/docs/EXTENSIONS.md
+    url: https://github.com/kalaoapp/Kalao/blob/main/android/docs/EXTENSIONS.md
     about: How the extension framework works and how to write your own extension.

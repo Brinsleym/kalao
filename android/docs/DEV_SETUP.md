@@ -11,7 +11,7 @@ Toolchain versions match Mornye (LIBRARIES.md §1).
 | Flutter 3.47.8 (FVM) | ✅ via Scoop `extras/fvm` (`FVM_CACHE_PATH` set). Without Developer Mode `fvm install` can't create its symlink: link it with a junction, `New-Item -ItemType Junction -Path .fvm\versions\3.47.8 -Target $env:FVM_CACHE_PATH\versions\3.47.8` |
 | JDK 25 | ✅ Temurin 25.0.5 via Scoop `java/temurin25-jdk` (`JAVA_HOME` set) |
 | Android SDK 37 / NDK 30.0.16248370 | ✅ via Scoop `main/android-clt` + `sdkmanager`: platform-tools, `platforms;android-37.0`, `build-tools;37.0.0`, NDK, `cmake;4.1.2`; licences accepted; `ANDROID_HOME`/`ANDROID_NDK_HOME` set |
-| Git | ✅ `karaoke/` is the `Brinsleym/kalao` repo; `poc-webapp/` is git-ignored. Private extensions live in a separate private repo |
+| Git | ✅ `karaoke/` is the `kalaoapp/Kalao` repo; `poc-webapp/` is git-ignored. Private extensions live in a separate private repo |
 
 ## Install
 1. **FVM** (`dart pub global activate fvm` or the installer), then `fvm install` in `android/` (reads `.fvmrc`, Flutter 3.47.8). Use `fvm flutter …` for every command.
@@ -22,6 +22,7 @@ Toolchain versions match Mornye (LIBRARIES.md §1).
    rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
    cargo install cargo-ndk
    ```
+   On Linux hosts the host build of `kalao-audio` (cpal) needs ALSA headers: `sudo apt-get install libasound2-dev pkg-config`. On Windows, Gradle's `buildRustBackend` must find Git Bash before WSL's `bash.exe` with `~/.cargo/bin` on PATH; otherwise build the Rust library first with `bash scripts/build_rust_backend.sh android` and run Gradle with `-x buildRustBackend`.
 5. **Git Bash** for `scripts/*.sh` and **Python 3** for `scripts/check_backend_apk.py` (as in Mornye).
 6. **Docker Desktop** for the stem server (from M6).
 

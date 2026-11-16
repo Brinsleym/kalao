@@ -5,7 +5,7 @@
 # Template for the changelog body
 body = """
 {%- macro remote_url() -%}
-  https://github.com/Brinsleym/kalao
+  https://github.com/kalaoapp/Kalao
 {%- endmacro -%}
 
 {% if version %}\
@@ -99,5 +99,5 @@ tag_pattern = "v[0-9].*"
 sort_commits = "newest"
 
 [remote.github]
-owner = "Brinsleym"
-repo = "kalao"
+owner = "kalaoapp"
+repo = "Kalao"

@@ -26,7 +26,7 @@ Pin policy (from Mornye): exact versions (`=x.y.z` in Cargo, no caret for packag
 | `flutter_secure_storage` | `10.3.4` (exact) | Stem key, install ID, extension secrets | Mornye |
 | `path_provider`, `path` | `^2.1.6`, `^1.9.1` | Paths | Mornye |
 | `ffi` | `^2.2.0` | Desktop backend later | Mornye |
-| `sqflite` (+ `sqflite_common_ffi` for desktop) | `^2.4.5` | Library, history, app-state databases | Mornye |
+| `sqflite` (+ `sqflite_common_ffi` for tests now, desktop later) | `^2.4.5` | Library, history, app-state databases | Mornye |
 | `http` | `^1.6.0` | Update checker | Mornye |
 | `connectivity_plus` | `^7.3.1` | Offline detection (stems remote, translation) | Mornye |
 | `crypto` | `^3.0.8` | SHA-256 (cache keys, update checksums) | Mornye |
@@ -43,10 +43,10 @@ Pin policy (from Mornye): exact versions (`=x.y.z` in Cargo, no caret for packag
 | `logger` | `^2.7.0` | `AppLogger` | Mornye |
 | `synchronized` | `^3.5.0` | Locks around DB writes | Mornye |
 | `flutter_local_notifications` | `^22.3.3` | Update and job notifications | Mornye |
-| `audio_service` | path `third_party/audio_service` (0.18.19 + Mornye patches) | Media session | Mornye |
+| `audio_service` | `^0.18.19` (pub.dev) | Media session, notification, headset buttons | Mornye's version; its fork's patches serve Android Auto, browsing and notification custom actions, which Kalao does not use (decided in M1.4), so the published package is used |
 | `audio_session` | `^0.2.4` | Focus, interruptions, routes | Mornye |
 | `app_links` | `^7.2.2` | `kalao://ext/<id>/callback` | Mornye |
-| `ffmpeg_kit_flutter_new_audio` | path `third_party/…` (2.5.7) | One-off conversion at import of formats Symphonia cannot decode (Opus, WMA, APE) | Mornye |
+| `ffmpeg_kit_flutter_new_audio` | `2.5.7` (pub.dev, exact) | One-off conversion at import of formats Symphonia cannot decode (Opus, WMA, APE) | Mornye's version; its fork only patches Windows, so the published package is used (M1.6) |
 | `mobile_scanner` | latest major | Scan party QR codes | new |
 | `qr_flutter` | latest major | Show party QR codes | new |
 | `flutter_lints`, `riverpod_lint`, `analyzer` | `^6.0.0`, `^3.1.9`, `^14.6.0` | Lints | Mornye |
@@ -76,7 +76,7 @@ No `play-services-*` artifacts.
 ### New in Kalao
 | Crate | Major | Crate user | Use |
 | --- | --- | --- | --- |
-| `symphonia` | 0.5 | audio, stems | Decode MP3, AAC/M4A, ALAC, FLAC, Vorbis, WAV |
+| `symphonia` | 0.5.5 (features mp3, aac, isomp4, alac, flac, vorbis, ogg, wav, pcm) | audio, stems | Decode MP3, AAC/M4A, ALAC, FLAC, Vorbis, WAV; also reads tags and covers for `probeAudio` |
 | `cpal` | 0.16 | audio | AAudio output and low-latency input on Android; WASAPI/CoreAudio/ALSA on desktop later |
 | `rubato` | 0.16 | audio, stems | Resampling to the device rate / model rate |
 | `signalsmith-stretch` (Rust bindings to Signalsmith Stretch, MIT) | latest | audio | Key change and tempo without pitch change (ADR-005) |
@@ -85,11 +85,10 @@ No `play-services-*` artifacts.
 | `ort` | 2.x (`load-dynamic`) | stems | ONNX Runtime; NNAPI/XNNPACK execution providers |
 | `ndarray` | 0.16 | stems | Tensors for inference |
 | `realfft` | 3.x | stems, audio | STFT/iSTFT (models that need spectrograms), pitch analysis |
-| `pinyin` | 0.10 | core::annotate | Hanzi → pinyin with tone marks and heteronyms |
-| `jieba-rs` | 0.7 | core::annotate | Word segmentation so polyphonic characters get the right reading |
+| `pinyin_pro` | =3.29.4 (MIT) | core::annotate, search keys | Rust port of `pinyin-pro`, the library the POC used: segmentation, polyphones in context, tone marks; the POC's fixtures pass unchanged. Replaces the planned `pinyin` + `jieba-rs` (M1.12) |
 | a pure-Rust OpenCC port (e.g. `ferrous-opencc`) with OpenCC data (Apache-2.0) | latest | core::annotate | Traditional ↔ Simplified (verify licence and data coverage at M3) |
 | `lindera` with IPADIC | latest | core::annotate | Japanese morphology → kana readings for furigana |
-| `wana_kana` | 4.x | core::annotate | Kana → romaji |
+| `wana_kana` | 4.x | core::search_keys (M1), core::annotate (M3.6) | Kana → romaji |
 | `ed25519-dalek` | 2.x | extensions | Repository signature verification (if Mornye's repository module lacks it) |
 | `freeverb`-style reverb (in-house, ~150 lines) | — | audio | Monitoring reverb; no dependency |
 | `clap` | 4.x | ext-cli | `kalao-ext` CLI |

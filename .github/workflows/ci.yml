@@ -25,10 +25,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      # The gitleaks CLI (MIT) scans the full history. gitleaks-action needs a
+      # paid licence key for organisation repositories, so it is not used.
       - name: Scan for secrets
-        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSLo "$RUNNER_TEMP/$archive" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${archive}"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/$archive" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" git --redact --verbose --exit-code 1 .
 
       - name: Private extensions and the POC are never committed
         run: |
@@ -89,6 +98,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Install ALSA headers (cpal host build)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev pkg-config
+
       - name: Activate pinned Rust toolchain
         working-directory: rust_backend
         run: rustup show
@@ -143,6 +155,9 @@ jobs:
             "platforms;android-37.0" \
             "build-tools;37.0.0"
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/30.0.16248370" >> "$GITHUB_ENV"
+
+      - name: Install ALSA headers (cpal host build)
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev pkg-config
 
       - name: Activate pinned Rust toolchain
         working-directory: rust_backend
