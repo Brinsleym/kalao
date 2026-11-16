@@ -8,5 +8,6 @@ class KalaoApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         AppCrashReporter.install(this)
+        AppCrashReporter.captureNativeExit(this)
     }
 }

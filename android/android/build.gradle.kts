@@ -18,6 +18,10 @@ subprojects {
                 defaultConfig {
                     multiDexEnabled = true
                 }
+
+                // Plugins default to Flutter's NDK; use the app's pinned NDK so
+                // builds need only one NDK install (DEV_SETUP.md).
+                ndkVersion = "30.0.16248370"
             }
 
             project.dependencies.add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:2.1.5")

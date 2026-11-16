@@ -30,7 +30,7 @@ There is no account server. The only Kalao-run service is the optional stem serv
 ## 2. Repository layout (mirrors Mornye's root)
 
 ```
-karaoke/                         # git root of Brinsleym/kalao
+karaoke/                         # git root of kalaoapp/Kalao
 ├── rust_backend/                # shared Cargo workspace (§4), Mornye template
 ├── scripts/                     # build_rust_backend.sh, check_rust_backend.sh, build_android.sh, check_backend_apk.py
 ├── android/                     # the Flutter app for Android (this project)
@@ -52,7 +52,7 @@ Mornye keeps one Flutter project at its root for every platform. Kalao keeps one
 | Folder | Role (as in Mornye) | Kalao contents |
 | --- | --- | --- |
 | `main.dart`, `app.dart` | Startup, `ProviderScope`, `MaterialApp.router`, `_routerProvider` with `initialLocationForAppState` (`/setup` → `/tutorial` → `/whats-new` → `/`) | Same flow |
-| `constants/` | `app_info.dart` (version, repo URLs, donation URL), `language_choices.dart` | `AppInfo.donateUrl = https://ko-fi.com/brinsley`, `AppInfo.githubRepo = Brinsleym/kalao` |
+| `constants/` | `app_info.dart` (version, repo URLs, donation URL), `language_choices.dart` | `AppInfo.donateUrl = https://ko-fi.com/brinsley`, `AppInfo.githubRepo = kalaoapp/Kalao` |
 | `models/` | Plain data, `json_serializable` (`settings.dart` + `.g.dart`, `track.dart`, `extension.dart`, `theme_settings.dart`) | `settings.dart`, `song.dart`, `lyrics_layers.dart`, `stem_job.dart`, `party.dart`, `extension.dart`, `theme_settings.dart` |
 | `services/` | All non-UI logic; one file per concern; large services split with `part` files | Mornye services kept (§MORNYE_REUSE), plus `karaoke_deck.dart`, `lyrics_annotation_service.dart`, `stem_service.dart`, `scoring_service.dart`, `party_host_service.dart`, `party_guest_service.dart` |
 | `services/backend/` | `BackendChannel`, `MethodChannelBackend`, `RustFfiBackend`, transports | Copied unchanged (renamed) |
@@ -117,8 +117,8 @@ The schema stays owned by Dart (as in Mornye: "the schema remains owned by Dart;
 
 ## 7. Playback architecture
 
-- Mornye's player runtime is reused: `music_player_service.dart` (with its `part` files), `music_player_runtime.dart`, `playable_media.dart`, `playback_metadata.dart`, `playback_session_restore.dart`, the `audio_service` fork in `third_party/audio_service`, `audio_session` focus handling, `playback_notification.dart`.
-- Mornye's `PlaybackDeck` interface (`services/playback_deck.dart`) is the seam. Kalao adds **`KaraokeDeck implements QueuedPlaybackDeck`**, backed by `kalao-audio` through `PlatformBridge`, and uses it as the only deck on Android. Mornye's `audioplayers` deck is not used: two independent players cannot keep stems sample-aligned, and they have no pitch shift or mic path.
+- Mornye's player roles are kept, sized for one deck (as built in M1): `PlayerController` (`providers/player_provider.dart`) takes the place of `music_player_service.dart` + `playback_session_restore.dart`; `KalaoAudioHandler` (`services/playback_handler.dart`) the place of `playback_notification.dart`, on the published `audio_service` package (Mornye's fork patches serve Android Auto and browsing, which Kalao does not have); `audio_session` focus handling as in Mornye.
+- Mornye's `PlaybackDeck` interface (`services/playback_deck.dart`) is the seam. Kalao adds **`KaraokeDeck`**, backed by `kalao-audio` through `PlatformBridge`, as the only deck on Android (M1 does not need the `QueuedPlaybackDeck` interface; it is introduced if desktop adds a second deck). Mornye's `audioplayers` deck is not used: two independent players cannot keep stems sample-aligned, and they have no pitch shift or mic path.
 - `KaraokeDeck` adds Kalao calls beyond the interface: `setStemGains`, `switchTrack(original|instrumental)`, `setKey(semitones)`, `setTempo(rate)`, `setLoop(a, b)`, `startScoring`, `startMonitoring`.
 - The engine clock is the single source of truth for lyric sync: `player_position_stream` carries `{positionMs, clockMonotonicNs}` and Dart interpolates between events for 60 fps rendering.
 
@@ -134,7 +134,7 @@ The schema stays owned by Dart (as in Mornye: "the schema remains owned by Dart;
 
 ## 9. Android host (`android/android/app/src/main/kotlin/com/brinsley/kalao/`)
 
-Copied from Mornye and trimmed: `KalaoApplication.kt` (engine arguments and configurator for the audio_service fork), `MainActivity.kt` + `MainActivityLifecycleCalls.kt`, `MainActivityServiceCalls.kt`, `MainActivitySafCalls.kt` / `SafIo` / `SafTreePicker` / `SafLeases` (import and backup folders), `MainActivityProgressStreams.kt`, `MainActivitySmallChannels.kt`, `MainActivityExtensionIntents.kt`, `ExtensionAuthCallbacks.kt`, `BackgroundWorkService.kt`, `ForegroundServiceStartPolicy.kt`, `ForegroundWorkLock.kt`, `AppCrashReporter.kt`, `NativeCrashTrace.kt`, `AudioRouteInfo.kt`, `src/rust/kotlin/{SelectedCoreBackend,RustCoreBackendApplication,NativeDataJobs}.kt`. New: `MainActivityPlayerCalls.kt` (audio permissions, AAudio session ids), `MainActivityPartyCalls.kt` (multicast lock, Wi-Fi state), `ApkInstallCalls.kt` (update installer).
+Copied from Mornye and trimmed: `KalaoApplication.kt` (crash capture), `MainActivity.kt` + `MainActivityLifecycleCalls.kt`, `MainActivityServiceCalls.kt`, `MainActivitySafCalls.kt` / `SafIo` / `SafTreePicker` / `SafLeases` (import and backup folders), `MainActivityProgressStreams.kt`, `MainActivitySmallChannels.kt`, `MainActivityExtensionIntents.kt`, `ExtensionAuthCallbacks.kt`, `BackgroundWorkService.kt`, `ForegroundServiceStartPolicy.kt`, `ForegroundWorkLock.kt`, `AppCrashReporter.kt`, `NativeCrashTrace.kt`, `AudioRouteInfo.kt`, `src/rust/kotlin/{SelectedCoreBackend,RustCoreBackendApplication,NativeDataJobs}.kt`. New: `MainActivityPlayerCalls.kt` (audio permissions, AAudio session ids), `MainActivityPartyCalls.kt` (multicast lock, Wi-Fi state), `ApkInstallCalls.kt` (update installer).
 
 Manifest: `minSdk 26`, `targetSdk 37`, `compileSdk 37`, NDK `30.0.16248370`, 16 KB page-aligned `.so`, ABI splits (arm64-v8a, armeabi-v7a, x86_64) plus universal. Permissions: `INTERNET`, `FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_MEDIA_PLAYBACK` + `FOREGROUND_SERVICE_DATA_SYNC`, `POST_NOTIFICATIONS`, `WAKE_LOCK`, `RECORD_AUDIO` (requested only for scoring/monitoring/recording), `CHANGE_WIFI_MULTICAST_STATE` (parties), `REQUEST_INSTALL_PACKAGES` (user-started updates), `CAMERA` (QR join, requested on use). No Google Play services.
 

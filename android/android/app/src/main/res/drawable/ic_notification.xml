@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status-bar icon: the Kalao symbol's three-bar small-size cut
+     (kalaoapp/branding logo/symbol/kalao-symbol-small-white.svg), as the brand
+     guidelines require below 32 px. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="120"
+    android:viewportHeight="128">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M32.00,44.00h0.00a8.00,8.00 0,0 1,8.00,8.00v14.00a8.00,8.00 0,0 1,-8.00,8.00h-0.00a8.00,8.00 0,0 1,-8.00,-8.00v-14.00a8.00,8.00 0,0 1,8.00,-8.00zM60.00,24.00h0.00a11.00,11.00 0,0 1,11.00,11.00v58.00a11.00,11.00 0,0 1,-11.00,11.00h-0.00a11.00,11.00 0,0 1,-11.00,-11.00v-58.00a11.00,11.00 0,0 1,11.00,-11.00zM88.00,44.00h0.00a8.00,8.00 0,0 1,8.00,8.00v14.00a8.00,8.00 0,0 1,-8.00,8.00h-0.00a8.00,8.00 0,0 1,-8.00,-8.00v-14.00a8.00,8.00 0,0 1,8.00,-8.00z" />
+</vector>

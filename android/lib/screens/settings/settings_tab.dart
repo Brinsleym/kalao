@@ -1,12 +1,16 @@
 // Derived from Mornye (https://github.com/mornyeapp/Mornye), Copyright 2026 zarzet,
 // LGPL-3.0-only. Modified for Kalao.
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kalao/constants/app_info.dart';
 import 'package:kalao/l10n/app_localizations.dart';
 import 'package:kalao/l10n/supported_locales.dart';
+import 'package:kalao/providers/library_provider.dart';
 import 'package:kalao/providers/settings_provider.dart';
+import 'package:kalao/screens/now_playing_screen.dart';
+import 'package:kalao/services/custom_font_service.dart';
 import 'package:kalao/services/platform_bridge.dart';
 import 'package:kalao/theme/app_tokens.dart';
 import 'package:kalao/widgets/settings_group.dart';
@@ -35,7 +39,30 @@ class SettingsTab extends ConsumerWidget {
         children: [
           SettingsGroup(
             title: l10n.settingsAppearance,
-            children: [const ThemeModeTile(), const LanguageTile()],
+            children: [
+              const ThemeModeTile(),
+              SwitchListTile(
+                secondary: const Icon(Icons.palette_outlined),
+                title: Text(l10n.settingsDynamicColor),
+                subtitle: Text(l10n.settingsDynamicColorSubtitle),
+                value: settings.dynamicColor,
+                onChanged: notifier.setDynamicColor,
+              ),
+              const LanguageTile(),
+            ],
+          ),
+          SettingsGroup(
+            title: l10n.settingsLyrics,
+            children: [
+              const LyricsSizeTile(),
+              const _CustomFontTile(),
+              SwitchListTile(
+                secondary: const Icon(Icons.translate),
+                title: Text(l10n.lyricsShowPinyin),
+                value: settings.showPinyin,
+                onChanged: notifier.setShowPinyin,
+              ),
+            ],
           ),
           SettingsGroup(
             title: l10n.settingsDiagnostics,
@@ -86,6 +113,50 @@ class SettingsTab extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Custom lyric font (Mornye's custom_font_setting): pick a .ttf/.otf file,
+/// or reset to the theme font.
+class _CustomFontTile extends ConsumerWidget {
+  const _CustomFontTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final path = ref.watch(settingsProvider.select((s) => s.customFontPath));
+    final family = ref.watch(customFontFamilyProvider).asData?.value;
+    final notifier = ref.read(settingsProvider.notifier);
+    return ListTile(
+      leading: const Icon(Icons.font_download_outlined),
+      title: Text(l10n.settingsCustomFont),
+      subtitle: Text(
+        family == null
+            ? l10n.settingsCustomFontDefault
+            : l10n.settingsCustomFontSample,
+        style: TextStyle(fontFamily: family),
+      ),
+      trailing: path == null
+          ? null
+          : IconButton(
+              tooltip: l10n.settingsCustomFontReset,
+              icon: const Icon(Icons.restart_alt),
+              onPressed: () => notifier.setCustomFontPath(null),
+            ),
+      onTap: () async {
+        final files = await FilePicker.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: customFontExtensions,
+        );
+        if (files.isEmpty) return;
+        final stored = await storeCustomFont(
+          ref.read(libraryServicesProvider).storage.fonts,
+          files.first.name,
+          await files.first.readAsBytes(),
+        );
+        await notifier.setCustomFontPath(stored);
+      },
     );
   }
 }

@@ -8,7 +8,7 @@ class AppInfo {
   static const String license = 'GPL-3.0-only';
   static const String copyright = '© 2026 Brinsley Morrison';
 
-  static const String githubRepo = 'Brinsleym/kalao';
+  static const String githubRepo = 'kalaoapp/Kalao';
   static const String githubUrl = 'https://github.com/$githubRepo';
   static const String issuesUrl = '$githubUrl/issues/new';
 

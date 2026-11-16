@@ -3,7 +3,7 @@
 package com.brinsley.kalao
 
 import android.os.Build
-import io.flutter.embedding.android.FlutterFragmentActivity
+import com.ryanheise.audioservice.AudioServiceFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.CoroutineScope
@@ -20,10 +20,10 @@ import java.io.File
  * [dispatchBackendApplication]. `MainActivityRoutingTest` keeps the set and
  * the `when` labels in step.
  *
- * M1 moves the engine to audio_service's cached engine (Mornye's
- * provideFlutterEngine/getCachedEngineId overrides) together with playback.
+ * The activity uses audio_service's cached engine (as Mornye), so the media
+ * session, notification and lock-screen controls share it with the UI.
  */
-class MainActivity : FlutterFragmentActivity() {
+class MainActivity : AudioServiceFragmentActivity() {
     private val CHANNEL = "com.brinsley.kalao/backend"
     private val LARGE_JSON_RESULT_FILE_KEY = "__json_file"
     private val LARGE_JSON_RESULT_FILE_THRESHOLD_BYTES = 256 * 1024
@@ -89,6 +89,7 @@ class MainActivity : FlutterFragmentActivity() {
         coreBackend
         sweepStaleCacheFiles()
 
+        registerProgressStreams(flutterEngine.dartExecutor.binaryMessenger)
         val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
         backendChannel = channel
         channel.setMethodCallHandler { call, result ->

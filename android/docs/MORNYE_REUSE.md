@@ -74,6 +74,9 @@ Kalao is built on Mornye's code wherever Mornye already solves the problem. This
 - `services/backup_service.dart`: Kalao categories (library, lyrics and annotations, history and scores, favorites, queue, settings, extensions, optional media).
 - `crates/link` → `crates/party` and Dart `services/link/*` → `services/party/*` (host, guest client, discovery with `bonsoir`).
 
+### Decided while implementing M1
+The large Mornye player and library files (`music_player_service.dart` 2,800 lines, `home_tab*` 7,000, `library_database.dart`, `player_lyrics.dart`, `core::tags` 2,700) are written around Mornye's many decks, sources and download metadata. M1 keeps their roles and patterns but implements Kalao-sized versions (`player_provider.dart`, `karaoke_deck.dart`, `home_tab.dart`, `library_database.dart`, `now_playing_screen.dart`, Symphonia metadata for `probeAudio`). The `audio_service` and `ffmpeg_kit_flutter_new_audio` forks are replaced by the published packages because their patches cover Android Auto, browsing, notification custom actions and Windows only. Copied as planned: `NativeCrashTrace.kt`, the progress-stream polling pattern (`MainActivityProgressStreams.kt`), the dynamic-colour scheme mapping, the custom-font loading pattern.
+
 ### Not used
 Downloads (all `download_*`, `native_download_*`, `DownloadService*.kt`), FFmpeg re-enrich/ReplayGain/Hi-Res, network storage (SMB, WebDAV, Subsonic), Mornye Link library sync, AutoMix and autoplay, equalizer, Discord presence, Last.fm, concerts, weekly releases, listening rewind, music recognition, motion artwork, cast, USB bit-perfect output, Android Auto browsing, iOS, the Mornye glass visual style (`liquid_glass_easy`, `mornye_*` widgets), `user_profile_store` and `profile_settings_page` (no accounts), `app_remote_config_service`.
 

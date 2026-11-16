@@ -7,8 +7,24 @@ import 'package:flutter/material.dart';
 class AppTokens {
   AppTokens._();
 
-  /// Kalao coral; the seed when Material You colours are off or unavailable.
-  static const Color brandSeed = Color(0xFFE8505B);
+  // Brand palette (kalaoapp/branding guidelines/colour.png; BRANDING.md).
+  /// Primary ("fern"): the one colour that does the work.
+  static const Color brandPrimary = Color(0xFF31572C);
+
+  /// Deep: text on the light tints.
+  static const Color brandDeep = Color(0xFF182C16);
+
+  /// Ink: the darkest neutral; dark surfaces and text on light surfaces.
+  static const Color brandInk = Color(0xFF151A14);
+
+  /// Container: light green-grey tint behind primary content.
+  static const Color brandContainer = Color(0xFFDEE4DD);
+
+  /// Light: mid tint; the primary role on dark surfaces.
+  static const Color brandLight = Color(0xFFB1BFAF);
+
+  /// Surface: the page colour in light mode.
+  static const Color brandSurface = Color(0xFFF5F7F4);
 
   static const double space2 = 2;
   static const double space4 = 4;

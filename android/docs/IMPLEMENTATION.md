@@ -6,7 +6,7 @@ How each subsystem is built. Structure and ownership are in ARCHITECTURE.md, the
 
 Every Rust call is a name in `kalao-mobile`'s dispatch (`invoke_application(method, args_json) -> String`), mirrored by a typed static method in `PlatformBridge` and, later, in `kalao-desktop/src/dispatch.rs`. Names are camelCase like Mornye's. Groups:
 
-Implemented so far (M0): `initBackend`, `getBackendInfo`, `getLogs(sinceIndex)`, `clearLogs`, `setLoggingEnabled`; data job `hash_file`; Kotlin-native `getAndroidSdkVersion`, `setScreenAwake`, `start/update/stopBackgroundWork`, `readLastCrashReport`, `clearLastCrashReport`, `recordAppRuntimeError`. The method list lives in `rust_backend/crates/mobile/src/backend.rs` (`METHODS`) and `MainActivity.nativeBackendMethods`.
+Implemented so far (M0–M1): `initBackend`, `getBackendInfo`, `getLogs(sinceIndex)`, `clearLogs`, `setLoggingEnabled`; player `playerLoad`, `playerPlay`, `playerPause`, `playerStop`, `playerSeek`, `playerSetVolume`, `playerSetStemGains({vocals, instrumental})`, `playerSwitchTrack`, `playerState`; import `probeAudio(path, coverBase?)`, `pairImportFiles(files)`; lyrics `parseLyrics(raw, format?)`, `detectSections(lines)`, `annotateLyrics(lines, layers)` (layer `pinyin`); data jobs `hash_file`, `rebuildSearchKeys`; event channel `com.brinsley.kalao/player_position_stream` (Kotlin polls `playerState`, 30 Hz while playing); Kotlin-native `getAndroidSdkVersion`, `setScreenAwake`, `start/update/stopBackgroundWork`, `readLastCrashReport`, `clearLastCrashReport`, `recordAppRuntimeError`. The method list lives in `rust_backend/crates/mobile/src/backend.rs` (`METHODS`) and `MainActivity.nativeBackendMethods`.
 
 | Group | Methods |
 | --- | --- |
@@ -26,14 +26,14 @@ Kotlin-native names (in `nativeBackendMethods`): SAF picker and I/O (Mornye's), 
 
 ## 2. Audio engine (`kalao-audio`) and `KaraokeDeck` (1.1–1.5, 3.1, 3.2)
 
-**Graph.** One output stream (cpal → AAudio, `PerformanceMode::LowLatency`, shared mode, f32, device rate, usually 48 kHz). Up to three sources per song: `original`, `instrumental`, `vocals`. Each source has a decoder thread (Symphonia) → `rubato` resampler → `ringbuf` SPSC buffer (≈ 500 ms). The audio callback pulls the same frame count from every buffer, applies per-source gains, sums into a stereo bus, runs the stretcher, then the output gain and a soft limiter.
+**Graph.** One output stream (cpal → AAudio, shared mode, f32 stereo at 48 kHz; AAudio resamples if the route differs. cpal 0.16 does not set `PerformanceMode::LowLatency`; the scoring work in M7 revisits this. The stream is requested directly because querying the default config on Android goes through JNI, which the library does not set up). Up to three sources per song: `original`, `instrumental`, `vocals`. Each source has a decoder thread (Symphonia) → `rubato` resampler → `ringbuf` SPSC buffer (≈ 500 ms). The audio callback pulls the same frame count from every buffer, applies per-source gains, sums into a stereo bus, runs the stretcher, then the output gain and a soft limiter.
 
 **Source sets.**
 - *Original + instrumental files* (user imported both): play both; `switchTrack` crossfades their gains.
 - *Stems* (separated): play `vocals` + `instrumental`; "original" = both at unity, "instrumental" = vocals at 0, vocal-guide blend (1.3) = vocals at 0–100%.
 - *Original only*: one source; karaoke features ask to separate first (4.1).
 
-**Sync.** All decoders seek to the same sample index; a seek pauses the callback mix, flushes the buffers, repositions every decoder, prefills, then resumes. Gains change with a 10 ms ramp; `switchTrack` uses a 150 ms equal-power crossfade. Because every source passes through one bus and one clock, stems never drift.
+**Sync.** All decoders seek to the same sample index; a seek pauses the callback mix, flushes the buffers, repositions every decoder, prefills, then resumes. (M1: a seek locks each source's worker and ring consumer, so the callback outputs silence for that block; the callback waits until every unfinished source has a full block, so sources never slip apart.) Gains change with a 10 ms ramp; `switchTrack` uses a 150 ms equal-power crossfade. One parameter drives both: the vocal level `v` (0–1). For an original + instrumental pair the gains are sin(vπ/2) and cos(vπ/2); for stems, vocals = `v` and instrumental = the backing level. The bus ends with a soft limiter (linear to 0.8, tanh knee). Because every source passes through one bus and one clock, stems never drift.
 
 **Key and tempo (1.4).** One Signalsmith Stretch instance on the mixed stereo bus: `setTransposeSemitones(k)` for ±6 semitones, time ratio for 50–150% tempo. When both are neutral the stretcher is bypassed (no latency, no CPU).
 
@@ -41,23 +41,23 @@ Kotlin-native names (in `nativeBackendMethods`): SAF picker and I/O (Mornye's), 
 
 **Loops (3.1).** `setLoop(a, b)`: when the source position reaches `b`, the engine performs an in-callback seek to `a` with a 20 ms crossfade. "Loop current line" sets `a/b` from the active line's start/end.
 
-**KaraokeDeck.** `services/karaoke_deck.dart` implements Mornye's `QueuedPlaybackDeck`. `setNetworkSource`/local source calls map to `playerLoad`; `onPositionChanged`, `onPlayerStateChanged`, `onPlayerComplete` come from `player_position_stream`; `setPlaybackRate` maps to tempo; `queueNextSource` maps to `playerPrefetch` so the next song's decoders warm up. Mornye's `music_player_service.dart` is used with the deck factory returning only `KaraokeDeck`; AutoMix/gapless/EQ/ReplayGain parts are removed.
+**KaraokeDeck.** `services/karaoke_deck.dart` wraps the engine (commands through `PlatformBridge`, state from the position stream, interpolated with a local stopwatch). Kalao has a single deck type, so `PlayerController` (`providers/player_provider.dart`) talks to it directly instead of going through Mornye's 2,800-line multi-deck `music_player_service.dart`; queue features arrive with M3.4. The original design was: it implements Mornye's `QueuedPlaybackDeck`. `setNetworkSource`/local source calls map to `playerLoad`; `onPositionChanged`, `onPlayerStateChanged`, `onPlayerComplete` come from `player_position_stream`; `setPlaybackRate` maps to tempo; `queueNextSource` maps to `playerPrefetch` so the next song's decoders warm up. Mornye's `music_player_service.dart` is used with the deck factory returning only `KaraokeDeck`; AutoMix/gapless/EQ/ReplayGain parts are removed.
 
 **Media session (1.5).** Unchanged from Mornye: `audio_service` fork, `audio_session` focus handling (duck on transient loss, pause on loss, pause on becoming-noisy), headset buttons, lock-screen metadata and artwork from `media_session_art_cache.dart`.
 
 ## 3. Import and library (1.6, 1.7, 6.1, 6.2)
 
-1. *Import* (SAF picker via Mornye's `MainActivitySafTreePicker`/`file_picker`): user picks one or more audio files, optionally a folder.
+1. *Import* (`file_picker` 13, which returns SAF content URIs): user picks audio and lyrics files; each is streamed into `import_staging/` (folder import is not in M1).
 2. *Pairing:* for each original, Kalao proposes an instrumental and a lyrics file from the same pick by filename similarity (`core::filename` normalisation, then tokens such as `instrumental`, `inst`, `karaoke`, `off vocal`, `backing`, `伴奏`, `カラオケ`, `オフボーカル`) and duration within ±2 s. The user confirms in the import sheet.
 3. *Copy:* files are copied into app storage `media/<sha256>.<ext>` (hashing while copying). This makes backups, stems and restore independent of SAF permissions. Duplicates by hash are linked, not copied twice.
-4. *Probe:* `probeAudio` reads tags, cover, duration and codec (Mornye `core::tags` and `mobile::tags`). Undecodable formats run `importConvert` once (FFmpeg → FLAC) and keep the converted file.
-5. *Store:* Dart `library_database.dart` inserts `song` and `media_file` rows; the cover goes to Mornye's `cover_store`.
+4. *Probe:* `probeAudio` reads tags (title, artist, album, ISRC, embedded lyrics), the front cover, duration and codec through Symphonia's metadata reader, which the engine already links; Mornye's 2,700-line `core::tags` (tag writing, download metadata) is not needed for read-only import and is not copied. Undecodable formats are converted once to FLAC with FFmpegKit in Dart (`main.dart`, no separate `importConvert` method) and the converted file is kept.
+5. *Store:* Dart `library_database.dart` inserts `song` and `media_file` rows; the embedded cover is written by `probeAudio` to `covers/` and referenced from `song.cover_path` (thumbnails via `Image.file(cacheWidth)`; Mornye's `cover_store` arrives if artwork search needs it in M5.8).
 6. *Search keys (6.2):* a `rebuildSearchKeys` native data job writes `song_search` rows: normalised title/artist (Mornye `normalizeLookupText`), toneless pinyin and initials for Chinese, romaji for Japanese. Library search queries title, artist, pinyin, initials, romaji with prefix matching.
 7. *Home (6.1):* Mornye's `home_tab` with Kalao sections: Continue singing (session restore), Recently played (`history_database`), Favorites, Recently added.
 
 ## 4. Lyrics (2.1–2.3, 2.6–2.8, 2.13)
 
-**Model (Dart, extended from Mornye `lyrics_parser.dart`).**
+**Model (Dart).** M1 implements it in `lib/models/lyrics.dart` (`LyricDocument`, `LyricLine` with `section`, `sectionBreakBefore`, `layers`; `RubySegment`); Mornye's word, voice and translation fields are added with timed lyrics in M2. Target shape:
 ```dart
 class LyricLine {            // Mornye fields
   Duration time; Duration? end; String text; List<LyricWord> words;
@@ -73,15 +73,15 @@ Untimed lyrics use `time = Duration.zero` for every line and a `timed = false` f
 
 **Parsing (2.8).** Rust `native_lyrics` (from Mornye): LRC with offsets and multiple time tags per line, enhanced LRC (`<mm:ss.xx>` word tags), TTML (Apple-style word timing, backing vocals as `voice`). Plain text: one line per row, blank rows = section breaks. Export: LRC (line timing) and enhanced LRC (word timing); TTML export is not planned.
 
-**Sections (2.2).** `core::text::detect_sections`: markers like `[Verse]`, `Chorus:`, `(Bridge)`, `【副歌】`, `主歌`, `副歌`, `间奏`, `[サビ]` become `LyricSection` on the next line and are removed from the text; blank lines become `sectionBreakBefore`.
+**Sections (2.2).** `core::sections` (ported from the POC's section-marker rules and tests, incl. the `【】｛｝「」『』❲❳` bracket forms): markers like `[Verse]`, `Chorus:`, `(Bridge)`, `【副歌】`, `主歌`, `副歌`, `间奏`, `[サビ]` become `LyricSection` on the next line and are removed from the text; blank lines become `sectionBreakBefore`.
 
 **Pinyin (2.3).** `core::annotate::pinyin`:
-1. Segment with `jieba-rs` so polyphonic characters are read in context (`重要` zhòng vs `重新` chóng), then `pinyin` per word with heteronym selection from the word dictionary.
+1. Read with `pinyin_pro` (Rust port of `pinyin-pro`, the POC's library), which segments and resolves polyphonic characters in context (`重要` zhòng vs `重新` chóng).
 2. Tone diacritics: mark goes on `a`/`e`, on `o` in `ou`, otherwise on the last vowel; `ü` kept (`lǜ`), `v` input normalised to `ü`.
 3. Er-hua: `儿` after a syllable merges into an `r` suffix on that syllable (`哪儿` → `nǎr`) when the word is in the er-hua list; otherwise `ér`.
-4. Alternative brackets: text in `（）`/`()` that is a reading or alternate lyric is shown as defined by the POC rules.
+4. Alternative brackets: the POC's bracket rules are its section-marker forms (`[]【】｛｝「」『』❲❳`), handled by `core::sections`; Han text inside `（）`/`()` is annotated like any other text.
 5. Alignment: one `RubySegment` per Han character (or per word for multi-character readings); non-Han text gets no segment, so spaces and Latin never shift the alignment (the POC's whitespace bug).
-The POC's pinyin, er-hua, bracket and whitespace test cases in `poc-webapp` are ported as Rust fixture tests (`crates/core/tests/annotate_pinyin.rs`) and must pass unchanged.
+The POC's pinyin, er-hua, bracket and whitespace test cases in `poc-webapp` are ported as Rust tests (`crates/core/src/annotate/pinyin.rs` and `crates/core/src/sections.rs`) and pass unchanged.
 
 **Japanese (2.4).** `lindera` (IPADIC) tokenises and gives katakana readings → converted to hiragana; segments are emitted only over kanji runs (okurigana stays unannotated). `wana_kana` converts readings to romaji (Hepburn), one romaji word per token; this fills `romanizationWords` for Mornye's pronunciation layout.
 
@@ -163,7 +163,7 @@ Derived from Mornye Link (`crates/link`):
 
 ## 14. Updates (9.8)
 
-Mornye `update_checker.dart` + `apk_downloader.dart`: once a day if enabled, read `api.github.com/repos/Brinsleym/kalao/releases/latest`, compare versions, pick the APK for the device ABI (arm64 / arm32 / universal), and show `update_dialog.dart` with the changelog. Only when the user taps Update: download to cache with a progress notification, verify the SHA-256 from the release's checksums file, then hand the APK to the package installer (`installApk`, `REQUEST_INSTALL_PACKAGES`). "Open release page" is always offered.
+Mornye `update_checker.dart` + `apk_downloader.dart`: once a day if enabled, read `api.github.com/repos/kalaoapp/Kalao/releases/latest`, compare versions, pick the APK for the device ABI (arm64 / arm32 / universal), and show `update_dialog.dart` with the changelog. Only when the user taps Update: download to cache with a progress notification, verify the SHA-256 from the release's checksums file, then hand the APK to the package installer (`installApk`, `REQUEST_INSTALL_PACKAGES`). "Open release page" is always offered.
 
 ## 15. Diagnostics (9.5)
 

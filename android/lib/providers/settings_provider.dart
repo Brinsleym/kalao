@@ -51,6 +51,18 @@ class SettingsNotifier extends Notifier<AppSettings> {
   Future<void> setLocaleTag(String? tag) =>
       _save(state.copyWith(localeTag: () => tag));
 
+  Future<void> setDynamicColor(bool value) =>
+      _save(state.copyWith(dynamicColor: value));
+
+  Future<void> setLyricsSize(LyricsSize size) =>
+      _save(state.copyWith(lyricsSize: size));
+
+  Future<void> setCustomFontPath(String? path) =>
+      _save(state.copyWith(customFontPath: () => path));
+
+  Future<void> setShowPinyin(bool value) =>
+      _save(state.copyWith(showPinyin: value));
+
   Future<void> setVerboseLogging(bool value) async {
     await _save(state.copyWith(verboseLogging: value));
     LogBuffer().verbose = value;

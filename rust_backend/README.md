@@ -6,20 +6,21 @@ The toolchain is pinned in `rust-toolchain.toml` (Rust 1.99.1 with rustfmt and c
 
 ## Crate map
 
-Dependencies point downward: `core` and `network` depend on no other workspace crate.
+Dependencies point downward: `core`, `network` and `audio` depend on no other workspace crate.
 
 | Crate | Package | Depends on | Status |
 | --- | --- | --- | --- |
-| `crates/core` | `kalao-core` | none | M0: JSON helpers, text, XML depth check, matching, cancellation, lyrics (LRC, enhanced LRC, TTML payloads, matching) |
+| `crates/core` | `kalao-core` | none | M0: JSON helpers, text, XML depth check, matching, cancellation, lyrics (LRC, enhanced LRC, TTML payloads, matching). M1: lyric documents (`lyrics::doc`), section markers (`sections`), pinyin ruby (`annotate::pinyin`, via `pinyin_pro`), search keys, import pairing |
+| `crates/audio` | `kalao-audio` | none | M1: playback engine (Symphonia → rubato → ring buffers → mixer → cpal/AAudio), `probe_file` |
 | `crates/network` | `kalao-network` | none | M0: copied unchanged from Mornye (HTTP client, cookies, DNS, TLS roots, request policy) |
-| `crates/mobile` | `kalao-mobile` | core | M0: UniFFI API: `invoke_application` method table, `run_native_data_job`, cancellation registry, log buffer |
+| `crates/mobile` | `kalao-mobile` | core, audio | M0: UniFFI API: `invoke_application` method table, `run_native_data_job`, cancellation registry, log buffer. M1: player, import and lyrics methods |
 | `crates/bindgen` | `kalao-bindgen` | `uniffi` CLI | M0: generates the Kotlin bindings |
 
-Later milestones add `audio`, `stems`, `providers`, `extensions`, `party`, `desktop` and `ext-cli` (see `android/docs/ARCHITECTURE.md`).
+Later milestones add `stems`, `providers`, `extensions`, `party`, `desktop` and `ext-cli` (see `android/docs/ARCHITECTURE.md`).
 
 ## Method table
 
-`kalao-mobile/src/backend.rs` holds every method name Kotlin forwards (`METHODS`, kept sorted; a test checks each name is dispatched). Arguments arrive as a JSON object; replies are JSON text. M0 methods: `initBackend`, `getBackendInfo`, `getLogs`, `clearLogs`, `setLoggingEnabled`. Native data jobs (`run_native_data_job`): `hash_file`.
+`kalao-mobile/src/backend.rs` holds every method name Kotlin forwards (`METHODS`, kept sorted; a test checks each name is dispatched). Arguments arrive as a JSON object; replies are JSON text. Methods: lifecycle (`initBackend`, `getBackendInfo`, `getLogs`, `clearLogs`, `setLoggingEnabled`), player (`playerLoad` … `playerState`), import (`probeAudio`, `pairImportFiles`), lyrics (`parseLyrics`, `detectSections`, `annotateLyrics`). Native data jobs (`run_native_data_job`): `hash_file`, `rebuildSearchKeys`.
 
 ## Building
 

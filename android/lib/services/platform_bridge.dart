@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:kalao/models/player_state.dart';
 import 'package:kalao/services/backend/backend_channel.dart';
 
 /// Backend info reported by `getBackendInfo`.
@@ -97,6 +98,106 @@ class PlatformBridge {
   static Future<void> setLoggingEnabled(bool enabled) =>
       _invoke('setLoggingEnabled', {'enabled': enabled});
 
+  // Player (Rust engine)
+
+  /// Loads [sources] (`kind` → file path) paused at [start].
+  static Future<EnginePlayerState> playerLoad({
+    required String songId,
+    required Map<String, String> sources,
+    Duration start = Duration.zero,
+  }) => _player('playerLoad', {
+    'songId': songId,
+    'sources': [
+      for (final entry in sources.entries)
+        {'kind': entry.key, 'path': entry.value},
+    ],
+    'startMs': start.inMilliseconds,
+  });
+
+  static Future<EnginePlayerState> playerPlay() => _player('playerPlay');
+
+  static Future<EnginePlayerState> playerPause() => _player('playerPause');
+
+  static Future<EnginePlayerState> playerStop() => _player('playerStop');
+
+  static Future<EnginePlayerState> playerSeek(Duration position) =>
+      _player('playerSeek', {'ms': position.inMilliseconds});
+
+  static Future<EnginePlayerState> playerSetVolume(double volume) =>
+      _player('playerSetVolume', {'volume': volume});
+
+  /// [vocals] is the vocal-guide level (0–1); [instrumental] the backing level.
+  static Future<EnginePlayerState> playerSetStemGains({
+    double? vocals,
+    double? instrumental,
+  }) => _player('playerSetStemGains', {
+    'vocals': ?vocals,
+    'instrumental': ?instrumental,
+  });
+
+  /// `original` or `instrumental`, with a short crossfade.
+  static Future<EnginePlayerState> playerSwitchTrack(String kind) =>
+      _player('playerSwitchTrack', {'kind': kind});
+
+  static Future<EnginePlayerState> playerState() => _player('playerState');
+
+  static Future<EnginePlayerState> _player(
+    String method, [
+    Map<String, Object?>? args,
+  ]) async => EnginePlayerState.fromJson(await _requiredMap(method, args));
+
+  // Import and lyrics (Rust)
+
+  /// Tags, duration, codec and decodability; writes embedded art to
+  /// [coverBase] + extension when given (reply `coverPath`).
+  static Future<Map<String, dynamic>> probeAudio(
+    String path, {
+    String? coverBase,
+  }) => _requiredMap('probeAudio', {'path': path, 'coverBase': ?coverBase});
+
+  /// Proposals `{original, instrumental?, lyrics?, title}` over [files]
+  /// (`{name, durationMs?}`), as indices.
+  static Future<List<Map<String, dynamic>>> pairImportFiles(
+    List<Map<String, Object?>> files,
+  ) => _requiredList('pairImportFiles', {'files': files});
+
+  /// A lyric document from LRC or plain text ([format] `lrc`/`plain`/null).
+  static Future<Map<String, dynamic>> parseLyrics(
+    String raw, {
+    String? format,
+  }) => _requiredMap('parseLyrics', {'raw': raw, 'format': ?format});
+
+  /// Layers `{lineIndex, kind, origin, segments}` for [lines].
+  static Future<List<Map<String, dynamic>>> annotateLyrics(
+    List<String> lines, {
+    List<String> layers = const ['pinyin'],
+  }) => _requiredList('annotateLyrics', {'lines': lines, 'layers': layers});
+
+  static Future<String> hashFile(
+    String path, {
+    required String requestId,
+  }) async =>
+      (await runNativeDataJob({
+            'operation': 'hash_file',
+            'path': path,
+          }, requestId: requestId))['sha256']
+          as String;
+
+  /// `song_search` rows for [songs] (`{id, title, artist}`).
+  static Future<List<Map<String, dynamic>>> rebuildSearchKeys(
+    List<Map<String, Object?>> songs, {
+    required String requestId,
+  }) async {
+    final reply = await runNativeDataJob({
+      'operation': 'rebuildSearchKeys',
+      'songs': songs,
+    }, requestId: requestId);
+    return [
+      for (final row in reply['rows'] as List<dynamic>? ?? const [])
+        (row as Map).cast<String, dynamic>(),
+    ];
+  }
+
   /// Runs CPU or file work in the Rust worker. [requestId] lets
   /// [cancelNativeDataJob] cancel it, also before it starts.
   static Future<Map<String, dynamic>> runNativeDataJob(
@@ -179,6 +280,21 @@ class PlatformBridge {
   ]) async {
     final result = await backendChannel.invokeMethod<Object?>(method, args);
     return _asMap(await decodeJsonResult(result), method);
+  }
+
+  static Future<List<Map<String, dynamic>>> _requiredList(
+    String method, [
+    Map<String, Object?>? args,
+  ]) async {
+    final decoded = await decodeJsonResult(
+      await backendChannel.invokeMethod<Object?>(method, args),
+    );
+    if (decoded is! List) {
+      throw FormatException(
+        'Expected list result from $method, got ${decoded.runtimeType}',
+      );
+    }
+    return [for (final item in decoded) (item as Map).cast<String, dynamic>()];
   }
 
   static Map<String, dynamic> _asMap(Object? decoded, String method) {
