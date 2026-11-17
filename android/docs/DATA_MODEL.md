@@ -8,19 +8,21 @@ The POC stored text layers only, with no timing. Kalao separates **text and timi
 
 ```json
 {
-  "version": 3,
-  "source": { "kind": "extension", "extensionId": "dev.example.lrcfinder", "itemId": "123" },
-  "sourceLang": "zh-Hans",
+  "version": 2,
+  "format": "elrc",
+  "sourceLang": "zh",
   "timed": true,
   "offsetMs": 0,
   "lines": [
     { "timeMs": 12340, "endMs": 15800, "text": "月亮代表我的心",
       "section": "chorus", "sectionBreakBefore": true,
       "words": [ { "timeMs": 12340, "endMs": 12900, "text": "月" } ],
-      "voice": null }
+      "voice": "v1", "translation": "The moon represents my heart" }
   ]
 }
 ```
+
+`version` 2 (M2) added `words`, `voice` and `translation`; version 1 documents read unchanged. `format` is how the text arrived (`plain`, `lrc`, `elrc`, `ttml`). `offsetMs` is added to the playback position before the line lookup (positive = lyrics earlier, as LRC's `[offset:]`). `words` are in text order and each is found in `text` in that order; `endMs` is optional on lines and words (a line ends when the next lead line starts, a word when the next word starts). `voice` is `v1`, `v2`, … in a duet and `bg` for backing vocals; `words`, `voice`, `translation` and `section` are omitted when empty. A `source` object (extension id and item) is added with lyric extensions in M5.
 
 Annotation layers per line:
 
@@ -29,7 +31,7 @@ Annotation layers per line:
   "segments": [ { "start": 0, "end": 1, "reading": "yuè" }, { "start": 1, "end": 2, "reading": "liang" } ] }
 ```
 
-`kind` ∈ `pinyin`, `furigana`, `romaji`, `traditional`, `simplified`, `translation:<lang>`; `origin` ∈ `auto`, `human`, `translator`. `human` layers are never overwritten by regeneration. LRC and enhanced LRC round-trip through `native_lyrics` without loss of line or word timing.
+`kind` ∈ `pinyin`, `furigana`, `romaji`, `traditional`, `simplified`, `translation:<lang>`; `origin` ∈ `auto`, `human`, `translator`. `human` layers are never overwritten by regeneration. Enhanced LRC round-trips through `core::lyrics::doc` without loss of line or word timing, sections, breaks or voices; plain LRC keeps line starts.
 
 ## 2. Local databases (Dart-owned, sqflite)
 
@@ -68,7 +70,7 @@ Annotation layers per line:
 | `shared_preferences` | `settings_provider` | `AppSettings` JSON (IMPLEMENTATION.md §16), daily MyMemory character counter |
 | `flutter_secure_storage` | `secure_storage_options.dart` | Stem API key, install ID, MyMemory contact email, extension `secret` settings |
 | `extensions/` | `kalao-extensions` | Installed packages, per-extension key-value storage and cookies |
-| `models/` | `kalao-stems` | Downloaded ONNX models (verified by SHA-256) |
+| `models/` | `kalao-stems` | User-installed ONNX models (verified by SHA-256), plus partial downloads; deleted from the Models screen |
 | `stems/<sha256>/` | `kalao-stems` | `vocals.flac`, `instrumental.flac`, `job.json` checkpoints |
 | `melody/<sha256>.bin` | `kalao-audio` | Pitch frames (u16 cents per 10 ms) |
 | `translations/` | `lyrics_translation.dart` | Mornye's translation cache files, keyed by line-list hash + language pair |
