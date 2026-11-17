@@ -24,6 +24,7 @@ pub enum BackendError {
 pub const METHODS: &[&str] = &[
     "annotateLyrics",
     "clearLogs",
+    "convertChinese",
     "detectSections",
     "exportLyrics",
     "getBackendInfo",
@@ -35,6 +36,8 @@ pub const METHODS: &[&str] = &[
     "playerPause",
     "playerPlay",
     "playerSeek",
+    "playerSetKey",
+    "playerSetLoop",
     "playerSetStemGains",
     "playerSetTempo",
     "playerSetVolume",
@@ -83,6 +86,7 @@ fn dispatch(method: &str, args: &Value) -> Result<Value, BackendError> {
             Ok(Value::Null)
         }
         "annotateLyrics" => crate::lyrics::annotate(method, args),
+        "convertChinese" => crate::lyrics::convert_chinese(method, args),
         "detectSections" => crate::lyrics::detect_sections(method, args),
         "exportLyrics" => crate::lyrics::export(method, args),
         "parseLyrics" => crate::lyrics::parse(method, args),
