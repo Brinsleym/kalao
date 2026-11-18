@@ -15,8 +15,10 @@ import 'package:kalao/app.dart';
 import 'package:kalao/providers/library_provider.dart';
 import 'package:kalao/providers/player_provider.dart';
 import 'package:kalao/providers/settings_provider.dart';
+import 'package:kalao/providers/update_provider.dart';
 import 'package:kalao/services/app_crash_service.dart';
 import 'package:kalao/services/app_storage.dart';
+import 'package:kalao/services/external_links.dart';
 import 'package:kalao/services/history_database.dart';
 import 'package:kalao/services/import_service.dart';
 import 'package:kalao/services/library_database.dart';
@@ -42,6 +44,7 @@ Future<void> main() async {
     return true;
   };
 
+  registerAppLicenses();
   final preferences = await SharedPreferences.getInstance();
   final services = await openLibraryServices();
   final handler = await _startMediaSession();
@@ -50,6 +53,8 @@ Future<void> main() async {
       sharedPreferencesProvider.overrideWithValue(preferences),
       libraryServicesProvider.overrideWithValue(services),
       audioHandlerProvider.overrideWithValue(handler),
+      audioFocusEnabledProvider.overrideWithValue(true),
+      updateServiceProvider.overrideWithValue(await openUpdateService()),
     ],
   );
   final verbose = container.read(settingsProvider).verboseLogging;

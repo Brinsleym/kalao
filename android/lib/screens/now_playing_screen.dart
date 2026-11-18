@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kalao/l10n/app_localizations.dart';
 import 'package:kalao/models/lyrics.dart';
+import 'package:kalao/providers/library_provider.dart';
 import 'package:kalao/providers/player_provider.dart';
 import 'package:kalao/providers/settings_provider.dart';
 import 'package:kalao/screens/lyrics_import_sheet.dart';
@@ -96,6 +97,7 @@ class NowPlayingScreen extends ConsumerWidget {
               ],
             ),
             actions: [
+              _FavoriteButton(songId: song.id),
               IconButton(
                 tooltip: l10n.queueAdd,
                 icon: const Icon(Icons.playlist_add),
@@ -119,23 +121,46 @@ class NowPlayingScreen extends ConsumerWidget {
             ],
           ),
           body: SafeArea(
-            child: Column(
-              children: [
-                ScreenAwake(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final lyricsPane = lyrics == null || lyrics.isEmpty
+                    ? _NoLyrics(
+                        onImport: () =>
+                            showLyricsImportSheet(context, ref, song),
+                      )
+                    : karaokeLayout
+                    ? KaraokeLyricsView(lyrics: lyrics)
+                    : LyricsView(lyrics: lyrics);
+                final awake = ScreenAwake(
                   enabled: now.isKaraoke && now.engine.playing && keepOn,
-                ),
-                Expanded(
-                  child: lyrics == null || lyrics.isEmpty
-                      ? _NoLyrics(
-                          onImport: () =>
-                              showLyricsImportSheet(context, ref, song),
-                        )
-                      : karaokeLayout
-                      ? KaraokeLyricsView(lyrics: lyrics)
-                      : LyricsView(lyrics: lyrics),
-                ),
-                const PlayerControls(),
-              ],
+                );
+                // Landscape: stacked controls would take most of the short
+                // height, so they move to a scrolling side panel and the
+                // lyrics keep the full height.
+                if (constraints.maxWidth > constraints.maxHeight) {
+                  return Row(
+                    children: [
+                      awake,
+                      Expanded(child: lyricsPane),
+                      Container(
+                        width: (constraints.maxWidth * 0.4).clamp(280, 400),
+                        color: Theme.of(context).colorScheme.surfaceContainer,
+                        alignment: Alignment.center,
+                        child: const SingleChildScrollView(
+                          child: PlayerControls(),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                return Column(
+                  children: [
+                    awake,
+                    Expanded(child: lyricsPane),
+                    const PlayerControls(),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -646,3 +671,23 @@ class _PlayerControlsState extends ConsumerState<PlayerControls> {
 
 /// Whether a custom font file still exists (used by settings).
 bool customFontExists(String? path) => path != null && File(path).existsSync();
+
+/// Heart toggle for the current song (M4.1).
+class _FavoriteButton extends ConsumerWidget {
+  const _FavoriteButton({required this.songId});
+
+  final int songId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final favorite = ref.watch(favoriteProvider(songId)).asData?.value ?? false;
+    return IconButton(
+      tooltip: favorite ? l10n.favoriteRemove : l10n.favoriteAdd,
+      isSelected: favorite,
+      icon: const Icon(Icons.favorite_border),
+      selectedIcon: const Icon(Icons.favorite),
+      onPressed: () => setFavorite(ref, songId, !favorite),
+    );
+  }
+}
