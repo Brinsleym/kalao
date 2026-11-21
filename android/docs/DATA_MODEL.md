@@ -48,6 +48,9 @@ Annotation layers per line:
 | `backup_run` | id, started_at, finished_at, target (`folder`/`file`), bytes, status, error | Library v2; backup log |
 | `library_folder` | id, tree_uri (unique), name, added_at, scanned_at, error (`access` when the folder could not be read) | Library v3; music folders (FEATURES 6.8) |
 | `folder_file` | uri (PK), folder_id, dir, name, role (`original`/`instrumental`/`lyrics`/`skipped`), song_id (null once the song is deleted), bytes, modified, error (`format`/`unreadable` for skipped files) | Library v3; what the scans have seen, for change detection |
+| *Library v4 (planned, M5B)* | `song` + album_artist, track_no, disc_no, year, genre, composer; `media_file` + available (0 when the folder file is gone or offline); `folder_file` + scan_version; `library_folder` + state (`online`/`offline`/`access`), auto-scan due time in settings | MORNYE_REUSE.md §7; folder songs are kept while unavailable and relinked by `song_key` |
+| `playlist`, `playlist_item` *(planned, M5B)* | playlist: id, name, created_at, updated_at; item: playlist_id, position, song_id | Local playlists; backups carry them, restore merges by name |
+| `album_artwork` *(planned, M5B)* | album_key, state (`found`/`none`/`removed`), cover_path, checked_at | Find Missing Artwork memory |
 | `melody` *(planned, M7)* | sha256, path, frames, created_at | Reference pitch track for scoring |
 | `stem_job` *(planned, M6)* | id, song_id, sha256, mode (`local`/`remote`), model, status, progress, remote_job_id, error, created_at | Mirror of Rust job state for UI; checkpoints are Rust files |
 

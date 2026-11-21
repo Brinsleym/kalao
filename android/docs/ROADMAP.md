@@ -139,6 +139,30 @@ Tests added: Rust `kalao-extensions` (manifest, package limits and packing, semv
 
 **Exit:** private lyrics and metadata extensions install from a signed repo and work; LRCLIB sample and EXTENSIONS.md are public; streaming and offline downloads work.
 
+## M5B Local Library — planned
+
+The rest of Mornye's Local Library on top of M4.13's music folders, adapted for karaoke; MORNYE_REUSE.md §7 has the inventory and the verdicts. Order: M5B.1–M5B.3 first (they change how the data behaves), then the browse and search work, then the extras.
+
+| # | Task | Features | Source / § |
+| --- | --- | --- | --- |
+| M5B.1 | Unavailable instead of deleted: a gone original or an offline folder marks the song's media `available = 0` (library v4), and the song keeps its lyrics, plays, favorites and queue entries. A new original whose `song_key` matches an unavailable song, in any music folder, is relinked to it (its instrumental and lyrics follow the pairing rules). Unavailable songs are greyed out and can't be played. **Cleanup Missing Files** deletes them after a confirmation that counts those with lyrics or plays. Restore relinks folder songs the same way once their folder is added again | 6.9 | `library_cleanup.dart`; IMPLEMENTATION §3 |
+| M5B.2 | Folder state: `listLibraryFolder` tells *offline* (its storage volume is not mounted) from *access lost*; an offline folder is rescanned when its volume returns (on start or resume). Auto scan setting: every app open (default), daily, weekly, manual. **Force Full Scan** re-reads every file, and `folder_file.scan_version` re-reads rows from an older reader once | 6.8 | `local_library_provider_sources.dart`, `library_settings_page.dart` |
+| M5B.3 | Lent descriptors are duplicated, never reopened (ADR-018): `kalao-core::fs::open_lent` (Mornye's `open_audio_file`, the one `#[allow(unsafe_code)]`) opens every `/proc/self/fd/N` path in the decoder and `probeAudio`; `KaraokeDeck` still holds the lease until the next load. The device test plays, seeks and loops a file from a proxy-descriptor provider | 6.8 | `mobile/src/tags.rs` `open_audio_file` |
+| M5B.4 | Richer tags: `probeAudio` also returns album artist, track and disc numbers, date (year), genre and composer from Symphonia's standard keys. Library v4 adds them to `song`; the next scan fills them in (scan version bump) and imports get them too | 6.10 | — |
+| M5B.5 | Undecodable formats (Opus, APE, WavPack, Musepack, DSF/DFF): indexed with FFprobeKit tags and duration instead of skipped; the first play converts the file to FLAC with FFmpegKit into `converted/<uri-hash>-<modified>.flac` (newest 1 GiB kept) and plays that copy. The converted copy is never backed up | 6.8 | — |
+| M5B.6 | Folder-image covers: the tree listing also returns image files; a song without an embedded cover uses its directory's image (Mornye's name priority, case-insensitive, AppleDouble skipped; disc subfolders such as `CD1` use their parent's), copied once into `covers/` and shared | 6.8 | `cover/folder.rs` |
+| M5B.7 | Browse pages over every song: Songs, Albums (album page: disc/track order, Sing all, Shuffle, add to queue), Artists (Albums \| Songs, last choice kept), Genres (tags split on `;` `/` `,`), Folders (tree with counts and Sing all under a folder), Recently added. Keyset paging and shared counts replace loading the whole library; fast scroller with a letter or month bubble; the last view is remembered | 6.11 | `library_browse_provider.dart`, `library_directory_view.dart`, `local_album_screen.dart`, `library_artist_screen.dart`, `library_fast_scroller.dart` |
+| M5B.8 | Filters and sorts: origin (imported, folder, extension), format, lyrics (none, plain, line-timed, word-timed), has instrumental, favorites, unavailable, missing artwork, genre or year; sorts latest, oldest, title, artist, album, year, genre, size, most sung. Selection gains Sing all and Shuffle | 6.11 | `library_track_selection_bar.dart` |
+| M5B.9 | Search: every query word must match some `song_search` key, in any order, with punctuation as a separator (Mornye's rule over Kalao's pinyin, initials and romaji keys). A Lyrics filter matches `lyric_doc` text. Home's extension results show **In Library** by ISRC or `song_key` | 6.2, 6.12 | `library_search.dart` |
+| M5B.10 | Review duplicates: groups of songs with the same `song_key` across folders, imports and downloads, confirmed by SHA-256 on demand (folder files are hashed only here). Choosing which to keep moves lyrics, favorites and plays to the kept song and never deletes a folder file | 6.13 | `library_duplicates.dart` |
+| M5B.11 | Find Missing Artwork: for albums without a cover, ask the artwork extensions (one album at a time, cancellable, with progress), save to `covers/`, and remember both "none found" and covers the user removed, so neither is looked up again | 6.13 | `library_album_artwork.dart` |
+| M5B.12 | Playlists (local): `playlist` + `playlist_item` (library v4); create, rename, delete, reorder, add from a selection or Now playing, Sing all, queue all; Playlists in the Library tab; included in backups and merged by name on restore | 6.14 | `library_collections_database.dart` (local part) |
+| M5B.13 | Strings in all four ARB files; FEATURES, DATA_MODEL, IMPLEMENTATION §3 and MORNYE_REUSE §7 updated to what was built | — | — |
+
+Tests to add: Dart `library_folder_test` (unavailable and relink by `song_key`, across folders and after restore, cleanup counts, offline vs access lost, auto-scan due check, full rescan and scan version, folder-image choice, converted-copy cache), `library_browse_test` (paging cursors, album/artist/genre/folder grouping, filters, sorts), `library_search_test` (word rule with pinyin and romaji, lyrics text), `library_maintenance_test` (duplicates keep user data, artwork memory), `playlist_test` (store, reorder, backup merge); Rust `probeAudio` standard tags; Kotlin listing with images and offline volumes; `integration_test/library_folder_test.dart` (a real SAF folder: scan, play, seek and loop, the AppFuse provider of M5B.3, a 5,000-file scan time).
+
+**Exit:** a folder of 5,000 songs scans on a mid-range device and later scans read only changes; moving or renaming a song, or unplugging its SD card, keeps its lyrics and plays; albums, artists, genres and folders browse smoothly at that size; search finds songs by pinyin words in any order and by a lyric line.
+
 ## M6 Stems and translation
 
 | # | Task | Features | Source / § |
@@ -202,6 +226,9 @@ Tests added: Rust `kalao-extensions` (manifest, package limits and packing, semv
 | 2.8 | M2.2 | 5.3 | M5.3 | 9.6 | M4.9 |
 | 2.9 | M2.4 | 5.4 | M5.4 | 9.7 | M4.10 |
 | — | — | 5.5 | M5.5 | 9.8 | M4.11 |
+| 6.8 | M4.13, M5B.2–M5B.6 | 6.9 | M5B.1 | 6.10 | M5B.4 |
+| 6.11 | M5B.7, M5B.8 | 6.12 | M5B.9 | 6.13 | M5B.10, M5B.11 |
+| 6.14 | M5B.12 | — | — | — | — |
 | — | — | — | — | 6.8 | M4.13 |
 
 **Distribution:** GitHub Releases only, from M3 (v0.1.0). Each release: per-ABI and universal signed APKs, SHA-256 checksums, changelog. No store builds.

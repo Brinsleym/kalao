@@ -70,6 +70,7 @@ Planned Kotlin-native names: `acquireMulticastLock/releaseMulticastLock` (M8), `
 - *When:* on app start for every folder (quietly), and from the screen (one folder or all, inside the foreground work service with progress).
 - *Rows:* `media_file.path` is the document URI, `source = folder`, `sha256` empty (folder files are not hashed). Deleting such a song never deletes its file; its `folder_file` row stays with no song, so rescans leave it out. Removing a folder removes its songs and releases the permission (unless it is also the backup folder).
 - *Playback:* `KaraokeDeck.load` opens descriptors for document URIs and keeps them until the next song loads (the engine reopens files to seek and loop).
+- *Planned (M5B, MORNYE_REUSE.md §7):* songs whose file is gone or whose folder is offline stay unavailable (with lyrics and plays) and are relinked by `song_key`; Cleanup Missing Files; offline vs access lost; auto-scan frequency and Force Full Scan; folder-image covers; richer tags; undecodable formats converted on first play into `converted/`; Albums/Artists/Genres/Folders with paging; karaoke filters; word-order-free and lyric-text search; duplicates; Find Missing Artwork; local playlists.
 
 ## 4. Lyrics (2.1–2.3, 2.6–2.8, 2.13)
 
