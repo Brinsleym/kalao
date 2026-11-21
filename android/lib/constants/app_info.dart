@@ -1,10 +1,13 @@
 // Derived from Mornye (https://github.com/mornyeapp/Mornye), Copyright 2026 zarzet,
 // LGPL-3.0-only. Modified for Kalao.
 
-/// Static facts about this build. Keep [version] in step with pubspec.yaml.
+/// Static facts about this build.
 class AppInfo {
   static const String appName = 'Kalao';
-  static const String version = '0.1.0';
+
+  /// Strict semver (the extension engine parses it). Set it with
+  /// `scripts/bump_version.sh`, which also updates pubspec.yaml.
+  static const String version = '0.2.0-alpha';
   static const String license = 'GPL-3.0-only';
   static const String copyright = '© 2026 Brinsley Morrison';
 
